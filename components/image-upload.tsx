@@ -83,29 +83,30 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <div className="flex flex-col items-center justify-center gap-4 p-12">
-            <div className="flex gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Camera className="h-8 w-8 text-primary" />
+          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 p-6 sm:p-12">
+            <div className="flex gap-3 sm:gap-4">
+              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-primary/10">
+                <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Upload className="h-8 w-8 text-primary" />
+              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-primary/10">
+                <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
             </div>
 
             <div className="text-center">
-              <p className="text-lg font-semibold text-foreground">
+              <p className="text-base sm:text-lg font-semibold text-foreground">
                 Upload ingredient photo
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Drag and drop or click to browse
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto px-4 sm:px-0">
               <Button
                 onClick={() => fileInputRef.current?.click()}
                 variant="default"
+                className="w-full sm:w-auto"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Choose File
@@ -123,6 +124,7 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
                   input.click()
                 }}
                 variant="outline"
+                className="w-full sm:w-auto"
               >
                 <Camera className="mr-2 h-4 w-4" />
                 Take Photo

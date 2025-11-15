@@ -88,10 +88,10 @@ function RecipesContent() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => router.push('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <Button variant="ghost" onClick={() => router.push('/')} size="sm" className="sm:size-default">
+            <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
             Back
           </Button>
 
@@ -100,15 +100,16 @@ function RecipesContent() {
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className="lg:hidden"
+              size="sm"
             >
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
+              <SlidersHorizontal className="mr-1 sm:mr-2 h-4 w-4" />
               Filters
             </Button>
           )}
         </div>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-3">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 sm:mb-3">
             {themeParam && currentTheme
               ? currentTheme.title
               : ingredients.length > 0
@@ -116,17 +117,17 @@ function RecipesContent() {
                 : 'Browse Recipes by Theme'}
           </h1>
           {ingredients.length > 0 && (
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Based on: {ingredients.join(', ')}
             </p>
           )}
           {themeParam && currentTheme && (
-            <p className="text-muted-foreground">{currentTheme.description}</p>
+            <p className="text-sm sm:text-base text-muted-foreground">{currentTheme.description}</p>
           )}
         </div>
 
         {showThemes ? (
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {themedCollections.map(({ theme, recipes }) => (
               <RecipeThemeSection
                 key={theme.id}
@@ -157,7 +158,7 @@ function RecipesContent() {
 
             <div className="lg:col-span-3">
               {filteredRecipes.length > 0 ? (
-                <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                   {filteredRecipes.map((item) => (
                     <RecipeCard
                       key={item.recipe.id}

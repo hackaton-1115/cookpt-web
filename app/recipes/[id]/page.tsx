@@ -34,18 +34,18 @@ export default function RecipeDetailPage({
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-5xl">
         <Link href="/recipes">
-          <Button variant="ghost" className="mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+          <Button variant="ghost" className="mb-4 sm:mb-6" size="sm">
+            <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
             Back to Recipes
           </Button>
         </Link>
 
-        <div className="grid md:grid-cols-5 gap-8">
-          <div className="md:col-span-3 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
+          <div className="md:col-span-3 space-y-4 sm:space-y-6">
             <div>
-              <div className="relative h-96 rounded-lg overflow-hidden mb-4">
+              <div className="relative h-56 sm:h-72 md:h-96 rounded-lg overflow-hidden mb-3 sm:mb-4">
                 <img
                   src={recipe.image || "/placeholder.svg"}
                   alt={recipe.title}
@@ -53,51 +53,51 @@ export default function RecipeDetailPage({
                 />
               </div>
 
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className={difficultyColor[recipe.difficulty]}>
+              <div className="flex items-center gap-2 mb-2 sm:mb-3 flex-wrap">
+                <Badge className={difficultyColor[recipe.difficulty] + " text-xs"}>
                   {recipe.difficulty}
                 </Badge>
                 {recipe.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
+                  <Badge key={tag} variant="secondary" className="text-xs">
                     {tag}
                   </Badge>
                 ))}
               </div>
 
-              <h1 className="text-4xl font-bold text-foreground mb-3 text-balance">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 sm:mb-3 text-balance">
                 {recipe.title}
               </h1>
-              <p className="text-lg text-muted-foreground text-pretty">
+              <p className="text-base sm:text-lg text-muted-foreground text-pretty">
                 {recipe.description}
               </p>
             </div>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <Card>
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold">{totalTime}</div>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-primary" />
+                  <div className="text-xl sm:text-2xl font-bold">{totalTime}</div>
                   <div className="text-xs text-muted-foreground">minutes</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <Users className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold">{recipe.servings}</div>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Users className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-primary" />
+                  <div className="text-xl sm:text-2xl font-bold">{recipe.servings}</div>
                   <div className="text-xs text-muted-foreground">servings</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <ChefHat className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-sm font-bold">{recipe.category}</div>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <ChefHat className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-primary" />
+                  <div className="text-xs sm:text-sm font-bold truncate">{recipe.category}</div>
                   <div className="text-xs text-muted-foreground">category</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
-                  <Flame className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold">
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Flame className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-primary" />
+                  <div className="text-xl sm:text-2xl font-bold">
                     {recipe.nutrition.calories}
                   </div>
                   <div className="text-xs text-muted-foreground">calories</div>
@@ -106,21 +106,21 @@ export default function RecipeDetailPage({
             </div>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Ingredients</CardTitle>
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl">Ingredients</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
+                <ul className="space-y-2 sm:space-y-3">
                   {recipe.ingredients.map((ingredient, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <li key={index} className="flex items-start gap-2 sm:gap-3">
+                      <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                         <span className="text-xs font-semibold text-primary">
                           {index + 1}
                         </span>
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 text-sm sm:text-base">
                         <span className="font-medium">{ingredient.name}</span>
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground text-xs sm:text-sm">
                           {' '}
                           - {ingredient.amount}
                           {ingredient.unit ? ` ${ingredient.unit}` : ''}
@@ -133,17 +133,17 @@ export default function RecipeDetailPage({
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Instructions</CardTitle>
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl">Instructions</CardTitle>
               </CardHeader>
               <CardContent>
-                <ol className="space-y-4">
+                <ol className="space-y-3 sm:space-y-4">
                   {recipe.instructions.map((instruction, index) => (
-                    <li key={index} className="flex gap-4">
-                      <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 font-bold">
+                    <li key={index} className="flex gap-3 sm:gap-4">
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 font-bold text-sm sm:text-base">
                         {index + 1}
                       </div>
-                      <p className="flex-1 pt-1 text-pretty">{instruction}</p>
+                      <p className="flex-1 pt-1 text-pretty text-sm sm:text-base">{instruction}</p>
                     </li>
                   ))}
                 </ol>
@@ -151,11 +151,11 @@ export default function RecipeDetailPage({
             </Card>
           </div>
 
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-4 sm:space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Nutrition Facts</CardTitle>
-                <p className="text-sm text-muted-foreground">
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl">Nutrition Facts</CardTitle>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Per serving ({recipe.servings} servings)
                 </p>
               </CardHeader>
@@ -252,13 +252,13 @@ export default function RecipeDetailPage({
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Cooking Tools</CardTitle>
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl">Cooking Tools</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {recipe.cookingTools.map((tool) => (
-                    <Badge key={tool} variant="outline" className="capitalize">
+                    <Badge key={tool} variant="outline" className="capitalize text-xs">
                       {tool}
                     </Badge>
                   ))}
@@ -267,8 +267,8 @@ export default function RecipeDetailPage({
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Time Breakdown</CardTitle>
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl">Time Breakdown</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center">

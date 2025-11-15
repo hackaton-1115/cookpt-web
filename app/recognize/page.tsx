@@ -74,45 +74,46 @@ export default function RecognizePage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
         <Button
           variant="ghost"
           onClick={() => router.push('/')}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
+          size="sm"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
           Back
         </Button>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-3">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 sm:mb-3">
             Recognized Ingredients
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Review and select the ingredients you want to use
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div>
-            <Card className="overflow-hidden mb-4">
+            <Card className="overflow-hidden mb-3 sm:mb-4">
               <img
                 src={imageData || "/placeholder.svg"}
                 alt="Uploaded ingredients"
-                className="w-full h-auto max-h-80 object-cover"
+                className="w-full h-auto max-h-64 sm:max-h-80 object-cover"
               />
             </Card>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground text-center">
               Your uploaded photo
             </p>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold">
                 Found {ingredients.length} ingredients
               </h2>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {selectedIngredients.size} selected
               </span>
             </div>
