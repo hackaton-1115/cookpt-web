@@ -39,6 +39,7 @@ export const loadGeneratedRecipes = async (): Promise<Recipe[]> => {
       category: recipe.category,
       cookingTools: recipe.cooking_tools || [],
       tags: recipe.tags || [],
+      likesCount: recipe.likes_count || 0,
     }));
   } catch (error) {
     console.error('레시피 불러오기 실패:', error);
@@ -82,6 +83,7 @@ export const findRecipeById = async (id: string): Promise<Recipe | null> => {
       category: recipe.category,
       cookingTools: recipe.cooking_tools || [],
       tags: recipe.tags || [],
+      likesCount: recipe.likes_count || 0,
     };
   } catch (error) {
     console.error('레시피 찾기 실패:', error);

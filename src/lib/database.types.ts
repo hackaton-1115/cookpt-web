@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      recipe_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          recipe_id: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          recipe_id: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          recipe_id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_likes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recipes: {
         Row: {
           category: string
@@ -26,12 +58,14 @@ export type Database = {
           image_url: string | null
           ingredients: Json
           instructions: string[]
+          likes_count: number
           nutrition: Json
           prep_time: number
           servings: number
           tags: string[]
           title: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           category: string
@@ -44,12 +78,14 @@ export type Database = {
           image_url?: string | null
           ingredients?: Json
           instructions?: string[]
+          likes_count?: number
           nutrition?: Json
           prep_time: number
           servings: number
           tags?: string[]
           title: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           category?: string
@@ -62,12 +98,14 @@ export type Database = {
           image_url?: string | null
           ingredients?: Json
           instructions?: string[]
+          likes_count?: number
           nutrition?: Json
           prep_time?: number
           servings?: number
           tags?: string[]
           title?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
