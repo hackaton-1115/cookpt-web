@@ -111,6 +111,9 @@ export function Navigation() {
                       <DropdownMenuLabel>내 계정</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
+                        <Link href='/mypage'>마이페이지</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link href='/upload'>앱 시작하기</Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -195,6 +198,11 @@ export function Navigation() {
                           {user.user_metadata?.full_name || user.email}
                         </span>
                       </div>
+                      <Link href='/favorites' onClick={() => setMobileMenuOpen(false)}>
+                        <Button size='lg' variant='outline' className='mb-2 w-full'>
+                          좋아요한 레시피
+                        </Button>
+                      </Link>
                       <Link href='/upload' onClick={() => setMobileMenuOpen(false)}>
                         <Button size='lg' className='bg-primary hover:bg-primary/90 w-full'>
                           앱 시작하기

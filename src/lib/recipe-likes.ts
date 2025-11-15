@@ -134,3 +134,37 @@ export const checkMultipleRecipesLiked = async (
     return {};
   }
 };
+
+/**
+ * 사용자가 좋아요한 레시피 ID 목록 가져오기
+ */
+export const getLikedRecipeIds = async (): Promise<string[]> => {
+  try {
+    const supabase = getSupabase();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const userId = user?.id || null;
+    const sessionId = !userId ? getSessionId() : null;
+
+    let query = supabase
+      .from('recipe_likes')
+      .select('recipe_id')
+      .order('created_at', { ascending: false });
+
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else if (sessionId) {
+      query = query.eq('session_id', sessionId);
+    }
+
+    const { data } = await query;
+
+    return data?.map((like) => like.recipe_id) || [];
+  } catch (error) {
+    console.error('좋아요한 레시피 목록 조회 실패:', error);
+    return [];
+  }
+};
