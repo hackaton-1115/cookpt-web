@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function MyPage() {
   const [likedCount, setLikedCount] = useState<number>(0);
+  const [myRecipesCount, setMyRecipesCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
 
@@ -38,6 +39,13 @@ export default function MyPage() {
         // 좋아요한 레시피 개수만 가져오기
         const likedIds = await getLikedRecipeIds();
         setLikedCount(likedIds.length);
+
+        // 내가 만든 레시피 개수 가져오기
+        const { count } = await supabase
+          .from('recipes')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', currentUser.id);
+        setMyRecipesCount(count || 0);
       } catch (error) {
         console.error('통계 불러오기 실패:', error);
       } finally {
@@ -64,6 +72,15 @@ export default function MyPage() {
   ) : (
     <main className='bg-background min-h-screen py-8'>
       <div className='container mx-auto max-w-4xl px-4'>
+        {/* 페이지 헤더 */}
+        <div className='mb-8'>
+          <div className='mb-2 flex items-center gap-2'>
+            <User className='h-8 w-8' />
+            <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+          </div>
+          <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+        </div>
+
         {/* 사용자 정보 카드 */}
         <Card className='mb-8'>
           <CardHeader>
@@ -88,6 +105,21 @@ export default function MyPage() {
 
         {/* 빠른 메뉴 */}
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+          <Link href='/my-recipes'>
+            <Card className='hover:border-primary cursor-pointer transition-colors'>
+              <CardContent className='flex items-center gap-4 p-6'>
+                <div className='bg-primary/10 rounded-full p-3'>
+                  <ChefHat className='text-primary h-8 w-8' />
+                </div>
+                <div className='flex-1'>
+                  <h3 className='mb-1 text-lg font-semibold'>내 레시피</h3>
+                  <p className='text-muted-foreground text-sm'>{myRecipesCount}개의 레시피</p>
+                </div>
+                <ArrowRight className='text-muted-foreground h-5 w-5' />
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href='/favorites'>
             <Card className='hover:border-primary cursor-pointer transition-colors'>
               <CardContent className='flex items-center gap-4 p-6'>
@@ -97,21 +129,6 @@ export default function MyPage() {
                 <div className='flex-1'>
                   <h3 className='mb-1 text-lg font-semibold'>좋아요한 레시피</h3>
                   <p className='text-muted-foreground text-sm'>{likedCount}개의 레시피</p>
-                </div>
-                <ArrowRight className='text-muted-foreground h-5 w-5' />
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href='/upload'>
-            <Card className='hover:border-primary cursor-pointer transition-colors'>
-              <CardContent className='flex items-center gap-4 p-6'>
-                <div className='bg-primary/10 rounded-full p-3'>
-                  <ChefHat className='text-primary h-8 w-8' />
-                </div>
-                <div className='flex-1'>
-                  <h3 className='mb-1 text-lg font-semibold'>새 레시피 만들기</h3>
-                  <p className='text-muted-foreground text-sm'>재료로 레시피 찾기</p>
                 </div>
                 <ArrowRight className='text-muted-foreground h-5 w-5' />
               </CardContent>

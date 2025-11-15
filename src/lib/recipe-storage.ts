@@ -157,3 +157,50 @@ export const findRecipesByIds = async (ids: string[]): Promise<Recipe[]> => {
   }
 };
 
+/**
+ * 특정 사용자가 생성한 레시피 목록 가져오기
+ */
+export const findRecipesByUserId = async (userId: string): Promise<Recipe[]> => {
+  try {
+    const supabase = getSupabase();
+    const { data: recipes, error } = await supabase
+      .from('recipes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error || !recipes) {
+      console.error('사용자 레시피 조회 실패:', error);
+      return [];
+    }
+
+    // DB 데이터를 Recipe 타입으로 변환
+    return recipes.map((recipe) => ({
+      id: recipe.id,
+      title: recipe.title,
+      description: recipe.description,
+      image: recipe.image_url || '/placeholder-recipe.jpg',
+      prepTime: recipe.prep_time,
+      cookTime: recipe.cook_time,
+      servings: recipe.servings,
+      difficulty: recipe.difficulty as 'easy' | 'medium' | 'hard',
+      ingredients: (recipe.ingredients as unknown as Ingredient[]) || [],
+      instructions: recipe.instructions || [],
+      nutrition: (recipe.nutrition as unknown as NutritionInfo) || {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      },
+      category: recipe.category,
+      cookingTools: recipe.cooking_tools || [],
+      tags: recipe.tags || [],
+      likesCount: recipe.likes_count || 0,
+    }));
+  } catch (error) {
+    console.error('사용자 레시피 조회 실패:', error);
+    return [];
+  }
+};
+
