@@ -64,12 +64,11 @@ export function Hero({ onLearnMore }: HeroProps) {
             <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
             <div className="border-primary/20 shadow-primary/10 relative overflow-hidden rounded-2xl border shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1617735605078-8a9336be0816?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb29raW5nJTIwaW5ncmVkaWVudHMlMjBraXRjaGVufGVufDF8fHx8MTc2MzA5NzE5Mnww&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/slide1.png"
                 alt="Cooking ingredients"
                 width={1080}
                 height={720}
                 className="h-auto w-full"
-                unoptimized
               />
             </div>
           </div>

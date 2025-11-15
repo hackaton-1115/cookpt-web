@@ -16,12 +16,11 @@ export function CallToAction() {
             <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
             <div className="border-primary/20 shadow-primary/10 relative overflow-hidden rounded-2xl border shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1665088127661-83aeff6104c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMHZlZ2V0YWJsZXMlMjBpbmdyZWRpZW50c3xlbnwxfHx8fDE3NjMxMTMyODV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/slide3.png"
                 alt="Fresh ingredients"
                 width={1080}
                 height={720}
                 className="h-auto w-full"
-                unoptimized
               />
             </div>
           </div>

@@ -69,12 +69,11 @@ export function HowItWorks() {
             <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
             <div className="border-primary/20 shadow-primary/10 relative overflow-hidden rounded-2xl border shadow-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1553813881-5e74278a18ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWFydHBob25lJTIwZm9vZCUyMHBob3RvfGVufDF8fHx8MTc2MzE4NTc0NXww&ixlib=rb-4.1.0&q=80&w=1080"
+                src="/slide2.png"
                 alt="Smartphone food photography"
                 width={1080}
                 height={720}
                 className="h-auto w-full"
-                unoptimized
               />
             </div>
           </div>
