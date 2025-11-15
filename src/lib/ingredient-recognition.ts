@@ -1,27 +1,15 @@
-import { Recipe, RecognizedIngredient, RecognizeImageResponse } from './types';
+import { recognizeIngredients as recognizeIngredientsEdge } from './edge-functions';
+import { Recipe, RecognizedIngredient } from './types';
 
-// Gemini Vision API를 사용한 AI 재료 인식
+// Supabase Edge Function을 사용한 AI 재료 인식
 export const recognizeIngredients = async (imageData: string): Promise<RecognizedIngredient[]> => {
   try {
-    const response = await fetch('/api/recognize', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ imageData }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP 오류! 상태: ${response.status}`);
-    }
-
-    const result: RecognizeImageResponse = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || '재료 인식에 실패했습니다.');
-    }
-
-    return result.data || [];
+    const ingredients = await recognizeIngredientsEdge(imageData);
+    // category 필드가 없으면 기본값 추가
+    return ingredients.map((ing) => ({
+      ...ing,
+      category: (ing as RecognizedIngredient).category || 'Other',
+    }));
   } catch (error) {
     console.error('재료 인식 오류:', error);
     throw error instanceof Error
