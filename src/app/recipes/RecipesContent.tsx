@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { RecipeCard } from '@/components/RecipeCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { generateRecipes } from '@/lib/recipe-generation';
-import { loadGeneratedRecipes, saveGeneratedRecipes } from '@/lib/recipe-storage';
+import { generateRecipes } from '@/lib/edge-functions';
+import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
@@ -22,32 +22,28 @@ export default function RecipesContent() {
   const ingredientsParam = searchParams.get('ingredients');
 
   useEffect(() => {
-    // 재료가 없으면 홈으로 리다이렉트
-    if (!ingredientsParam) {
-      router.push('/');
-      return;
-    }
+    const loadRecipes = async () => {
+      // 재료가 없으면 홈으로 리다이렉트
+      if (!ingredientsParam) {
+        router.push('/');
+        return;
+      }
 
-    const ingredients = ingredientsParam.split(',').map((i) => i.trim());
+      const ingredients = ingredientsParam.split(',').map((i) => i.trim());
 
-    // 기존에 생성된 레시피가 있는지 확인
-    const existingRecipes = loadGeneratedRecipes();
-    if (existingRecipes.length > 0) {
-      // 이미 생성된 레시피가 있으면 재사용
-      setRecipes(existingRecipes);
-      setLoading(false);
-      return;
-    }
+      // 기존에 생성된 레시피가 있는지 확인
+      const existingRecipes = await loadGeneratedRecipes();
+      if (existingRecipes.length > 0) {
+        // 이미 생성된 레시피가 있으면 재사용
+        setRecipes(existingRecipes);
+        setLoading(false);
+        return;
+      }
 
-    // AI 레시피 생성
-    const fetchRecipes = async () => {
+      // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {
         const generatedRecipes = await generateRecipes(ingredients);
         setRecipes(generatedRecipes);
-
-        // sessionStorage에 저장
-        saveGeneratedRecipes(generatedRecipes);
-
         setLoading(false);
       } catch (err) {
         console.error('레시피 생성 실패:', err);
@@ -56,7 +52,7 @@ export default function RecipesContent() {
       }
     };
 
-    fetchRecipes();
+    loadRecipes();
   }, [ingredientsParam, router]);
 
   const ingredients = ingredientsParam ? ingredientsParam.split(',').map((i) => i.trim()) : [];

@@ -28,12 +28,16 @@ export default function RecipeDetailPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const id = params.id as string;
+    const loadRecipe = async () => {
+      const id = params.id as string;
 
-    // sessionStorage에서 AI 생성 레시피 찾기
-    const aiRecipe = findRecipeById(id);
-    setRecipe(aiRecipe);
-    setLoading(false);
+      // Supabase에서 AI 생성 레시피 찾기
+      const aiRecipe = await findRecipeById(id);
+      setRecipe(aiRecipe);
+      setLoading(false);
+    };
+
+    loadRecipe();
   }, [params.id]);
 
   const totalTime = recipe ? recipe.prepTime + recipe.cookTime : 0;
