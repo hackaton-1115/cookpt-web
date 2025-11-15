@@ -38,33 +38,33 @@ interface OpenAIIngredientResponse {
   }>;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   try {
-    // Parse request body
+    // 요청 본문 파싱
     const body: RecognizeImageRequest = await request.json();
 
     if (!body.imageData) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Image data is required',
+          error: '이미지 데이터가 필요합니다',
         } as RecognizeImageResponse,
         { status: 400 },
       );
     }
 
-    // Validate image format
+    // 이미지 형식 검증
     if (!body.imageData.startsWith('data:image/')) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid image format. Must be a base64 encoded image.',
+          error: '잘못된 이미지 형식입니다. base64 인코딩된 이미지여야 합니다.',
         } as RecognizeImageResponse,
         { status: 400 },
       );
     }
 
-    // Call OpenAI Vision API
+    // OpenAI Vision API 호출
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -89,26 +89,26 @@ export async function POST(request: NextRequest) {
         },
       ],
       max_tokens: 1000,
-      temperature: 0.3, // Lower temperature for more consistent results
+      temperature: 0.3, // 더 일관된 결과를 위한 낮은 temperature
     });
 
-    // Extract and parse the response
+    // 응답 추출 및 파싱
     const aiResponse = response.choices[0]?.message?.content;
 
     if (!aiResponse) {
       return NextResponse.json(
         {
           success: false,
-          error: 'No response from AI',
+          error: 'AI로부터 응답이 없습니다',
         } as RecognizeImageResponse,
         { status: 500 },
       );
     }
 
-    // Parse JSON from response (handle potential markdown code blocks)
+    // JSON 파싱 (마크다운 코드 블록 처리)
     let jsonResponse: OpenAIIngredientResponse;
     try {
-      // Remove markdown code blocks if present
+      // 마크다운 코드 블록 제거
       const cleanedResponse = aiResponse
         .replace(/```json\n?/g, '')
         .replace(/```\n?/g, '')
@@ -116,36 +116,36 @@ export async function POST(request: NextRequest) {
 
       jsonResponse = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError, aiResponse);
+      console.error('AI 응답 파싱 실패:', parseError, aiResponse);
       return NextResponse.json(
         {
           success: false,
-          error: 'Failed to parse AI response',
+          error: 'AI 응답을 파싱하는데 실패했습니다',
         } as RecognizeImageResponse,
         { status: 500 },
       );
     }
 
-    // Validate and transform the response
+    // 응답 검증 및 변환
     if (!jsonResponse.ingredients || !Array.isArray(jsonResponse.ingredients)) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid response format from AI',
+          error: 'AI로부터 잘못된 응답 형식을 받았습니다',
         } as RecognizeImageResponse,
         { status: 500 },
       );
     }
 
-    // Return successful response
+    // 성공 응답 반환
     return NextResponse.json({
       success: true,
       data: jsonResponse.ingredients,
     } as RecognizeImageResponse);
   } catch (error) {
-    console.error('Error in recognize API:', error);
+    console.error('재료 인식 API 오류:', error);
 
-    // Handle OpenAI API errors
+    // OpenAI API 오류 처리
     if (error instanceof OpenAI.APIError) {
       if (error.status === 429) {
         return NextResponse.json(
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generic error
+    // 일반 오류
     return NextResponse.json(
       {
         success: false,
@@ -175,15 +175,15 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};
 
-// Only allow POST method
-export async function GET() {
+// POST 메서드만 허용
+export const GET = async () => {
   return NextResponse.json(
     {
       success: false,
-      error: 'Method not allowed. Use POST.',
+      error: '허용되지 않는 메서드입니다. POST를 사용하세요.',
     } as RecognizeImageResponse,
     { status: 405 },
   );
-}
+};

@@ -1,7 +1,7 @@
 import { Recipe, RecognizedIngredient, RecognizeImageResponse } from './types';
 
-// AI ingredient recognition using OpenAI Vision API
-export async function recognizeIngredients(imageData: string): Promise<RecognizedIngredient[]> {
+// OpenAI Vision API를 사용한 AI 재료 인식
+export const recognizeIngredients = async (imageData: string): Promise<RecognizedIngredient[]> => {
   try {
     const response = await fetch('/api/recognize', {
       method: 'POST',
@@ -12,7 +12,7 @@ export async function recognizeIngredients(imageData: string): Promise<Recognize
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP 오류! 상태: ${response.status}`);
     }
 
     const result: RecognizeImageResponse = await response.json();
@@ -23,15 +23,15 @@ export async function recognizeIngredients(imageData: string): Promise<Recognize
 
     return result.data || [];
   } catch (error) {
-    console.error('Error recognizing ingredients:', error);
+    console.error('재료 인식 오류:', error);
     throw error instanceof Error
       ? error
       : new Error('재료 인식 중 알 수 없는 오류가 발생했습니다.');
   }
-}
+};
 
-// Match recipes based on recognized ingredients
-export function findMatchingRecipes(ingredients: string[], allRecipes: Recipe[]) {
+// 인식된 재료를 기반으로 레시피 매칭
+export const findMatchingRecipes = (ingredients: string[], allRecipes: Recipe[]) => {
   const ingredientLower = ingredients.map((i) => i.toLowerCase());
 
   return allRecipes
@@ -49,4 +49,4 @@ export function findMatchingRecipes(ingredients: string[], allRecipes: Recipe[])
     })
     .filter((item) => item.matchCount > 0)
     .sort((a, b) => b.matchCount - a.matchCount);
-}
+};
