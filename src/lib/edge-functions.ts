@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { createClient } from './supabase/client';
 import { RecognizedIngredient, Recipe } from './types';
 
 interface EdgeFunctionResponse<T> {
@@ -15,6 +15,7 @@ interface EdgeFunctionResponse<T> {
 export const recognizeIngredients = async (
   imageData: string
 ): Promise<RecognizedIngredient[]> => {
+  const supabase = createClient();
   const { data, error } = await supabase.functions.invoke<
     EdgeFunctionResponse<RecognizedIngredient[]>
   >('recognize-ingredients', {
@@ -39,6 +40,7 @@ export const recognizeIngredients = async (
  * @returns 생성된 레시피 목록
  */
 export const generateRecipes = async (ingredients: string[]): Promise<Recipe[]> => {
+  const supabase = createClient();
   const { data, error } = await supabase.functions.invoke<EdgeFunctionResponse<Recipe[]>>(
     'generate-recipes',
     {
