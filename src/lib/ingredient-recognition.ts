@@ -1,6 +1,6 @@
 import { Recipe, RecognizedIngredient, RecognizeImageResponse } from './types';
 
-// OpenAI Vision API를 사용한 AI 재료 인식
+// Gemini Vision API를 사용한 AI 재료 인식
 export const recognizeIngredients = async (imageData: string): Promise<RecognizedIngredient[]> => {
   try {
     const response = await fetch('/api/recognize', {

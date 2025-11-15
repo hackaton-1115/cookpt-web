@@ -1,12 +1,10 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import { NextRequest, NextResponse } from 'next/server';
 
 import { GenerateRecipesRequest, GenerateRecipesResponse, Recipe } from '@/lib/types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const SYSTEM_PROMPT = `당신은 전문 한식 요리사입니다. 주어진 재료로 만들 수 있는 한식 레시피를 추천해주세요.`;
 
@@ -68,7 +66,7 @@ const createUserPrompt = (
 - 재료 손질 → 양념 만들기 → 조리 → 마무리 순서로 논리적 흐름 유지
 - 각 단계마다 예상되는 상태 변화(색깔, 질감, 향 등)를 설명`;
 
-interface OpenAIRecipeResponse {
+interface GeminiRecipeResponse {
   recipes: Recipe[];
 }
 
@@ -87,25 +85,16 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    // OpenAI Chat Completion API 호출
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: SYSTEM_PROMPT,
-        },
-        {
-          role: 'user',
-          content: createUserPrompt(body.ingredients),
-        },
-      ],
-      max_tokens: 4000,
-      temperature: 0.7, // 창의적인 레시피 생성
-    });
+    // Gemini API 호출
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+
+    const prompt = `${SYSTEM_PROMPT}\n\n${createUserPrompt(body.ingredients)}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
 
     // 응답 추출 및 파싱
-    const aiResponse = response.choices[0]?.message?.content;
+    const aiResponse = response.text();
 
     if (!aiResponse) {
       return NextResponse.json(
@@ -118,7 +107,7 @@ export const POST = async (request: NextRequest) => {
     }
 
     // JSON 파싱 (마크다운 코드 블록 처리)
-    let jsonResponse: OpenAIRecipeResponse;
+    let jsonResponse: GeminiRecipeResponse;
     try {
       // 마크다운 코드 블록 제거
       const cleanedResponse = aiResponse
@@ -157,9 +146,10 @@ export const POST = async (request: NextRequest) => {
   } catch (error) {
     console.error('레시피 생성 API 오류:', error);
 
-    // OpenAI API 오류 처리
-    if (error instanceof OpenAI.APIError) {
-      if (error.status === 429) {
+    // Gemini API 오류 처리
+    if (error instanceof Error) {
+      // Rate limit 오류 확인
+      if (error.message.includes('quota') || error.message.includes('rate limit')) {
         return NextResponse.json(
           {
             success: false,
@@ -172,9 +162,9 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json(
         {
           success: false,
-          error: `OpenAI API 오류: ${error.message}`,
+          error: `Gemini API 오류: ${error.message}`,
         } as GenerateRecipesResponse,
-        { status: error.status || 500 },
+        { status: 500 },
       );
     }
 
