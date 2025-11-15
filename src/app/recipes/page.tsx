@@ -5,9 +5,9 @@ import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, Suspense } from 'react';
 
-import { RecipeCard } from '@/components/recipe-card';
-import { RecipeFilters } from '@/components/recipe-filters';
-import { RecipeThemeSection } from '@/components/recipe-theme-section';
+import { RecipeCard } from '@/components/RecipeCard';
+import { RecipeFilters } from '@/components/RecipeFilters';
+import { RecipeThemeSection } from '@/components/RecipeThemeSection';
 import { Button } from '@/components/ui/button';
 import { findMatchingRecipes } from '@/lib/ingredient-recognition';
 import { RECIPES } from '@/lib/recipe-data';

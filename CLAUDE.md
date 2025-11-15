@@ -100,7 +100,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { ImageUpload } from '@/components/image-upload';
+import { ImageUpload } from '@/components/ImageUpload';
 import { Button } from '@/components/ui/button';
 ```
 

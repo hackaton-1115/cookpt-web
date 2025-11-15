@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { IngredientCard } from '@/components/ingredient-card';
+import { IngredientCard } from '@/components/IngredientCard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { recognizeIngredients } from '@/lib/ingredient-recognition';

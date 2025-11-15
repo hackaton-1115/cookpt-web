@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { Recipe } from '@/lib/types';
 
-import { RecipeCard } from './recipe-card';
+import { RecipeCard } from './RecipeCard';
 
 interface RecipeThemeSectionProps {
   title: string;
