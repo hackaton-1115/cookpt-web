@@ -14,7 +14,7 @@ import { recognizeIngredients } from '@/lib/ingredient-recognition';
 import { RecognizedIngredient } from '@/lib/types';
 
 export default function RecognizePage() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [imageData, setImageData] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<RecognizedIngredient[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(new Set());
@@ -31,22 +31,25 @@ export default function RecognizePage() {
 
     setImageData(storedImage);
 
-    // AI recognition with error handling
-    recognizeIngredients(storedImage)
-      .then((recognized) => {
+    // AI 재료 인식 및 에러 처리
+    const fetchIngredients = async () => {
+      try {
+        const recognized = await recognizeIngredients(storedImage);
         setIngredients(recognized);
-        // Auto-select all ingredients with confidence > 80%
+        // 신뢰도 80% 이상인 재료 자동 선택
         const autoSelected = new Set(
           recognized.filter((i) => i.confidence > 0.8).map((i) => i.name),
         );
         setSelectedIngredients(autoSelected);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Failed to recognize ingredients:', err);
+      } catch (err) {
+        console.error('재료 인식 실패:', err);
         setError(err instanceof Error ? err.message : '재료 인식 중 오류가 발생했습니다.');
         setLoading(false);
-      });
+      }
+    };
+
+    fetchIngredients();
   }, [router]);
 
   const toggleIngredient = (name: string) => {
@@ -68,19 +71,15 @@ export default function RecognizePage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
-        <div className='text-center'>
-          <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-          <h2 className='mb-2 text-xl font-semibold'>Analyzing your image</h2>
-          <p className='text-muted-foreground'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
-        </div>
+  return loading ? (
+    <div className='bg-background flex min-h-screen items-center justify-center'>
+      <div className='text-center'>
+        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
+        <h2 className='mb-2 text-xl font-semibold'>Analyzing your image</h2>
+        <p className='text-muted-foreground'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
       </div>
-    );
-  }
-
-  return (
+    </div>
+  ) : (
     <main className='bg-background min-h-screen'>
       <div className='container mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8'>
         <Button variant='ghost' onClick={() => router.push('/')} className='mb-4 sm:mb-6' size='sm'>

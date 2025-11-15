@@ -45,3 +45,13 @@ export interface RecognizeImageResponse {
   data?: RecognizedIngredient[];
   error?: string;
 }
+
+export interface GenerateRecipesRequest {
+  ingredients: string[]; // 재료 목록
+}
+
+export interface GenerateRecipesResponse {
+  success: boolean;
+  data?: Recipe[];
+  error?: string;
+}
