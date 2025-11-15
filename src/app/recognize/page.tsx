@@ -11,7 +11,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { recognizeIngredients } from '@/lib/ingredient-recognition';
-import { clearGeneratedRecipes } from '@/lib/recipe-storage';
 import { RecognizedIngredient } from '@/lib/types';
 
 export default function RecognizePage() {
@@ -31,9 +30,6 @@ export default function RecognizePage() {
     }
 
     setImageData(storedImage);
-
-    // 새로운 이미지 분석 시작 시 기존 레시피 초기화
-    clearGeneratedRecipes();
 
     // AI 재료 인식 및 에러 처리
     const fetchIngredients = async () => {
@@ -71,7 +67,7 @@ export default function RecognizePage() {
   const handleFindRecipes = () => {
     if (selectedIngredients.size > 0) {
       const ingredientList = Array.from(selectedIngredients).join(',');
-      router.push(`/recipes?ingredients=${encodeURIComponent(ingredientList)}`);
+      router.replace(`/recipes?ingredients=${encodeURIComponent(ingredientList)}`);
     }
   };
 

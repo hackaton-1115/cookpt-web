@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, Clock, Users, ChefHat, Flame, Loader2 } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, Flame, Heart, Loader2, Users } from 'lucide-react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { checkRecipeLiked, toggleRecipeLike } from '@/lib/recipe-likes';
 import { findRecipeById } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
@@ -23,22 +24,49 @@ const difficultyColor = {
 export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [liked, setLiked] = useState<boolean>(false);
+  const [likesCount, setLikesCount] = useState<number>(0);
+  const [isLiking, setIsLiking] = useState<boolean>(false);
 
   const params = useParams();
   const router = useRouter();
 
   useEffect(() => {
     const loadRecipe = async () => {
-      const id = params.id as string;
+      // URL 디코딩 (한글 ID 처리)
+      const id = decodeURIComponent(params.id as string);
 
       // Supabase에서 AI 생성 레시피 찾기
       const aiRecipe = await findRecipeById(id);
       setRecipe(aiRecipe);
+      setLikesCount(aiRecipe?.likesCount || 0);
+
+      // 좋아요 상태 확인
+      if (aiRecipe) {
+        const isLiked = await checkRecipeLiked(id);
+        setLiked(isLiked);
+      }
+
       setLoading(false);
     };
 
     loadRecipe();
   }, [params.id]);
+
+  const handleLikeClick = async () => {
+    if (!recipe || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      const newLiked = await toggleRecipeLike(recipe.id);
+      setLiked(newLiked);
+      setLikesCount((prev) => (newLiked ? prev + 1 : prev - 1));
+    } catch (error) {
+      console.error('좋아요 실패:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   const totalTime = recipe ? recipe.prepTime + recipe.cookTime : 0;
 
@@ -90,12 +118,28 @@ export default function RecipeDetailPage() {
                 ))}
               </div>
 
-              <h1 className='text-foreground mb-2 text-2xl font-bold text-balance sm:mb-3 sm:text-3xl md:text-4xl'>
-                {recipe.title}
-              </h1>
-              <p className='text-muted-foreground text-base text-pretty sm:text-lg'>
-                {recipe.description}
-              </p>
+              <div className='mb-3 flex items-start justify-between gap-3 sm:mb-4'>
+                <div className='flex-1'>
+                  <h1 className='text-foreground mb-2 text-2xl font-bold text-balance sm:mb-3 sm:text-3xl md:text-4xl'>
+                    {recipe.title}
+                  </h1>
+                  <p className='text-muted-foreground text-base text-pretty sm:text-lg'>
+                    {recipe.description}
+                  </p>
+                </div>
+                <Button
+                  variant='outline'
+                  size='lg'
+                  className='flex-shrink-0'
+                  onClick={handleLikeClick}
+                  disabled={isLiking}
+                >
+                  <Heart
+                    className={`mr-2 h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : ''}`}
+                  />
+                  <span>{likesCount}</span>
+                </Button>
+              </div>
             </div>
 
             <div className='grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4'>

@@ -66,6 +66,12 @@ export function Navigation() {
 
         <div className='hidden items-center gap-8 md:flex'>
           <Link
+            href='/all-recipes'
+            className='text-muted-foreground hover:text-foreground transition-colors'
+          >
+            모든 레시피
+          </Link>
+          <Link
             href='/features'
             className='text-muted-foreground hover:text-foreground transition-colors'
           >
@@ -104,6 +110,9 @@ export function Navigation() {
                     <DropdownMenuContent align='end' className='bg-background/80 backdrop-blur-sm'>
                       <DropdownMenuLabel>내 계정</DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href='/mypage'>마이페이지</Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href='/upload'>앱 시작하기</Link>
                       </DropdownMenuItem>
@@ -148,6 +157,13 @@ export function Navigation() {
         <div className='border-border/40 bg-background/95 border-t backdrop-blur-sm md:hidden'>
           <div className='container mx-auto space-y-4 px-4 py-6'>
             <Link
+              href='/all-recipes'
+              className='text-muted-foreground hover:text-foreground block py-2 transition-colors'
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              모든 레시피
+            </Link>
+            <Link
               href='/features'
               className='text-muted-foreground hover:text-foreground block py-2 transition-colors'
               onClick={() => setMobileMenuOpen(false)}
@@ -182,6 +198,11 @@ export function Navigation() {
                           {user.user_metadata?.full_name || user.email}
                         </span>
                       </div>
+                      <Link href='/favorites' onClick={() => setMobileMenuOpen(false)}>
+                        <Button size='lg' variant='outline' className='mb-2 w-full'>
+                          좋아요한 레시피
+                        </Button>
+                      </Link>
                       <Link href='/upload' onClick={() => setMobileMenuOpen(false)}>
                         <Button size='lg' className='bg-primary hover:bg-primary/90 w-full'>
                           앱 시작하기

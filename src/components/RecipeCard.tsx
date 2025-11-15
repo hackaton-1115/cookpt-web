@@ -1,19 +1,82 @@
-import { Clock, Users, ChefHat } from 'lucide-react';
+'use client';
+
+import { ChefHat, Clock, Heart, Users } from 'lucide-react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { toggleRecipeLike } from '@/lib/recipe-likes';
+import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
 
 interface RecipeCardProps {
   recipe: Recipe;
   matchPercentage?: number;
+  initialLiked?: boolean;
 }
 
-export function RecipeCard({ recipe, matchPercentage }: RecipeCardProps) {
+export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: RecipeCardProps) {
+  const router = useRouter();
+  const [liked, setLiked] = useState<boolean>(initialLiked);
+  const [likesCount, setLikesCount] = useState<number>(recipe.likesCount || 0);
+  const [isLiking, setIsLiking] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
   const totalTime = recipe.prepTime + recipe.cookTime;
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+
+    checkAuth();
+
+    // 인증 상태 변경 감지
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isLiking) return;
+
+    // 로그인하지 않은 경우 로그인 페이지로 이동
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+
+    setIsLiking(true);
+    try {
+      const newLiked = await toggleRecipeLike(recipe.id);
+      setLiked(newLiked);
+      setLikesCount((prev) => (newLiked ? prev + 1 : prev - 1));
+    } catch (error) {
+      console.error('좋아요 실패:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   const difficultyColor = {
     easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
@@ -43,6 +106,19 @@ export function RecipeCard({ recipe, matchPercentage }: RecipeCardProps) {
           >
             {recipe.difficulty}
           </Badge>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='absolute bottom-2 right-2 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white sm:h-9 sm:w-9'
+            onClick={handleLikeClick}
+            disabled={isLiking}
+          >
+            <Heart
+              className={`h-4 w-4 transition-all sm:h-5 sm:w-5 ${
+                liked ? 'fill-red-500 text-red-500' : 'text-gray-600'
+              }`}
+            />
+          </Button>
         </div>
 
         <CardContent className='p-3 sm:p-4'>
@@ -66,6 +142,12 @@ export function RecipeCard({ recipe, matchPercentage }: RecipeCardProps) {
               <ChefHat className='h-3 w-3 sm:h-4 sm:w-4' />
               <span className='truncate'>{recipe.category}</span>
             </div>
+            {likesCount > 0 && (
+              <div className='flex items-center gap-1'>
+                <Heart className='h-3 w-3 fill-red-500 text-red-500 sm:h-4 sm:w-4' />
+                <span>{likesCount}</span>
+              </div>
+            )}
           </div>
         </CardContent>
 
