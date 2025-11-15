@@ -9,6 +9,7 @@ import { RecipeCard } from '@/components/RecipeCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { generateRecipes } from '@/lib/recipe-generation';
+import { loadGeneratedRecipes, saveGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
@@ -29,11 +30,24 @@ export default function RecipesContent() {
 
     const ingredients = ingredientsParam.split(',').map((i) => i.trim());
 
+    // 기존에 생성된 레시피가 있는지 확인
+    const existingRecipes = loadGeneratedRecipes();
+    if (existingRecipes.length > 0) {
+      // 이미 생성된 레시피가 있으면 재사용
+      setRecipes(existingRecipes);
+      setLoading(false);
+      return;
+    }
+
     // AI 레시피 생성
     const fetchRecipes = async () => {
       try {
         const generatedRecipes = await generateRecipes(ingredients);
         setRecipes(generatedRecipes);
+
+        // sessionStorage에 저장
+        saveGeneratedRecipes(generatedRecipes);
+
         setLoading(false);
       } catch (err) {
         console.error('레시피 생성 실패:', err);
