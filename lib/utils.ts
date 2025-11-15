@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * CookptApp 네이티브 앱 여부 확인
- * navigator.userAgent에 'CookptApp/'이 포함되어 있는지 체크
+ * navigator.userAgent에 'CookptApp/1.0.0'이 포함되어 있는지 체크
  */
 export function isCookptApp(): boolean {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') {
@@ -15,7 +15,6 @@ export function isCookptApp(): boolean {
   }
 
   const userAgent = navigator.userAgent || ''
-
   return userAgent.includes('CookptApp/')
 }
 
@@ -30,6 +29,5 @@ export function getCookptAppVersion(): string | null {
 
   const userAgent = navigator.userAgent || ''
   const match = userAgent.match(/CookptApp\/([\d.]+)/)
-
   return match ? match[1] : null
 }
