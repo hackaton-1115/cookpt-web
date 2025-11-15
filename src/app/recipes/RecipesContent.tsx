@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { RecipeCard } from '@/components/RecipeCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { generateRecipes } from '@/lib/recipe-generation';
-import { loadGeneratedRecipes, saveGeneratedRecipes } from '@/lib/recipe-storage';
+import { generateRecipes } from '@/lib/edge-functions';
+import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
@@ -40,14 +40,10 @@ export default function RecipesContent() {
         return;
       }
 
-      // AI 레시피 생성
+      // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {
         const generatedRecipes = await generateRecipes(ingredients);
         setRecipes(generatedRecipes);
-
-        // Supabase에 저장
-        await saveGeneratedRecipes(generatedRecipes);
-
         setLoading(false);
       } catch (err) {
         console.error('레시피 생성 실패:', err);
