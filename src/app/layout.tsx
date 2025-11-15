@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'CookPT - AI 냉장고 재료 기반 한식 레시피 추천',
+  description:
+    '냉장고 재료 사진을 업로드하면 AI가 자동으로 재료를 인식하고, 해당 재료로 만들 수 있는 레시피를 추천해드립니다.',
   icons: {
     icon: [
       {
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='ko'>
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />

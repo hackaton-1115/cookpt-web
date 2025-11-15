@@ -1,37 +1,59 @@
-import { ArrowLeft, Clock, Users, ChefHat, Flame } from 'lucide-react';
+'use client';
+
+import { ArrowLeft, Clock, Users, ChefHat, Flame, Loader2 } from 'lucide-react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { RECIPES } from '@/lib/recipe-data';
+import { findRecipeById } from '@/lib/recipe-storage';
+import { Recipe } from '@/lib/types';
 
-export async function generateStaticParams() {
-  return RECIPES.map((recipe) => ({
-    id: recipe.id,
-  }));
-}
+const difficultyColor = {
+  easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
+  medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+  hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
+};
 
-export default function RecipeDetailPage({ params }: { params: { id: string } }) {
-  const recipe = RECIPES.find((r) => r.id === params.id);
+export default function RecipeDetailPage() {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  if (!recipe) {
-    notFound();
-  }
+  const params = useParams();
+  const router = useRouter();
 
-  const totalTime = recipe.prepTime + recipe.cookTime;
+  useEffect(() => {
+    const id = params.id as string;
 
-  const difficultyColor = {
-    easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-    hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  };
+    // sessionStorage에서 AI 생성 레시피 찾기
+    const aiRecipe = findRecipeById(id);
+    setRecipe(aiRecipe);
+    setLoading(false);
+  }, [params.id]);
 
-  return (
+  const totalTime = recipe ? recipe.prepTime + recipe.cookTime : 0;
+
+  return loading ? (
+    <div className='bg-background flex min-h-screen items-center justify-center'>
+      <div className='text-center'>
+        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
+        <p className='text-muted-foreground'>레시피를 불러오는 중...</p>
+      </div>
+    </div>
+  ) : !recipe ? (
+    <div className='bg-background flex min-h-screen items-center justify-center'>
+      <div className='text-center'>
+        <h2 className='mb-2 text-2xl font-bold'>레시피를 찾을 수 없습니다</h2>
+        <p className='text-muted-foreground mb-6'>요청하신 레시피가 존재하지 않습니다.</p>
+        <Button onClick={() => router.push('/recipes')}>레시피 목록으로 돌아가기</Button>
+      </div>
+    </div>
+  ) : (
     <main className='bg-background min-h-screen'>
       <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8'>
         <Link href='/recipes'>

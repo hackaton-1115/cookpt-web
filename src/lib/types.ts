@@ -34,3 +34,24 @@ export interface RecognizedIngredient {
   confidence: number;
   category: string;
 }
+
+// API Request/Response types
+export interface RecognizeImageRequest {
+  imageData: string; // base64 encoded image
+}
+
+export interface RecognizeImageResponse {
+  success: boolean;
+  data?: RecognizedIngredient[];
+  error?: string;
+}
+
+export interface GenerateRecipesRequest {
+  ingredients: string[]; // 재료 목록
+}
+
+export interface GenerateRecipesResponse {
+  success: boolean;
+  data?: Recipe[];
+  error?: string;
+}
