@@ -1,4 +1,4 @@
-import { createClient } from './supabase/client';
+import { supabase } from './supabase';
 import { RecognizedIngredient, Recipe } from './types';
 
 interface EdgeFunctionResponse<T> {
@@ -9,17 +9,19 @@ interface EdgeFunctionResponse<T> {
 
 /**
  * Edge Function을 통해 이미지에서 재료를 인식합니다.
- * @param imageData - base64로 인코딩된 이미지 데이터
+ * @param imageDataOrUrl - base64로 인코딩된 이미지 데이터 또는 Supabase Storage URL
  * @returns 인식된 재료 목록
  */
 export const recognizeIngredients = async (
-  imageData: string
+  imageDataOrUrl: string,
 ): Promise<RecognizedIngredient[]> => {
-  const supabase = createClient();
+  // URL인지 base64인지 판단
+  const isUrl = imageDataOrUrl.startsWith('http://') || imageDataOrUrl.startsWith('https://');
+
   const { data, error } = await supabase.functions.invoke<
     EdgeFunctionResponse<RecognizedIngredient[]>
   >('recognize-ingredients', {
-    body: { imageData },
+    body: isUrl ? { imageUrl: imageDataOrUrl } : { imageData: imageDataOrUrl },
   });
 
   if (error) {
@@ -40,12 +42,11 @@ export const recognizeIngredients = async (
  * @returns 생성된 레시피 목록
  */
 export const generateRecipes = async (ingredients: string[]): Promise<Recipe[]> => {
-  const supabase = createClient();
   const { data, error } = await supabase.functions.invoke<EdgeFunctionResponse<Recipe[]>>(
     'generate-recipes',
     {
       body: { ingredients },
-    }
+    },
   );
 
   if (error) {

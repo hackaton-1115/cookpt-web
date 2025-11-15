@@ -134,9 +134,7 @@ export default function RecipeDetailPage() {
                   onClick={handleLikeClick}
                   disabled={isLiking}
                 >
-                  <Heart
-                    className={`mr-2 h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : ''}`}
-                  />
+                  <Heart className={`mr-2 h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
                   <span>{likesCount}</span>
                 </Button>
               </div>
