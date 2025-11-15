@@ -119,6 +119,51 @@ import { Button } from '@/components/ui/button';
 - Strict 모드 활성화
 - Target: ES6
 
+### 기본 규칙
+
+- **모든 답변과 커뮤니케이션은 한국어로 작성**
+- 코드 내 주석도 가능한 한국어로 작성
+- 변수명, 함수명 등은 영어 사용 (코드 컨벤션)
+
+### 함수 정의
+
+- 모든 일반 함수와 이벤트 핸들러는 화살표 함수 형식으로 작성: `const fn = () => {}`
+- **UI 컴포넌트**만 `function` 키워드 사용 및 `export default`로 export
+  - 예: `export default function LoginForm() { ... }`
+- 커스텀 훅, 유틸리티 함수 등은 화살표 함수로 작성하고 named export 사용
+  - 예: `export const useAuth = () => { ... }`
+- 기존 코드 리팩토링 시 이 규칙에 맞춰 함수 정의를 통일
+
+예시:
+
+```typescript
+// ✅ 올바른 예시 - UI 컴포넌트
+export default function RecognizePage() {
+  return <div>...</div>;
+}
+
+// ✅ 올바른 예시 - 유틸리티 함수
+export const validateImageFormat = (base64: string): boolean => {
+  return validFormats.some((format) => base64.startsWith(`data:${format}`));
+};
+
+// ✅ 올바른 예시 - 커스텀 훅
+export const useImageUpload = () => {
+  const [image, setImage] = useState<string | null>(null);
+  return { image, setImage };
+};
+
+// ✅ 올바른 예시 - 이벤트 핸들러
+const handleClick = () => {
+  console.log('clicked');
+};
+
+// ❌ 잘못된 예시 - 일반 함수에 function 키워드 사용
+function validateImageFormat(base64: string): boolean {
+  return validFormats.some((format) => base64.startsWith(`data:${format}`));
+}
+```
+
 ## 환경 설정
 
 `.env.example`을 `.env.local`로 복사:
