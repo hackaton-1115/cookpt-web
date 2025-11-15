@@ -1,3 +1,4 @@
+import { GoogleGenAI } from '@google/genai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -5,6 +6,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GenerateRecipesRequest, GenerateRecipesResponse, Recipe } from '@/lib/types';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const imageAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || '',
+});
+
+// 레시피 이미지 생성 함수
+const generateRecipeImage = async (recipeTitle: string, recipeDescription: string): Promise<string> => {
+  try {
+    const prompt = `A professional, appetizing photo of Korean food dish: ${recipeTitle}. ${recipeDescription}. The dish should be beautifully plated on a traditional Korean dish, with natural lighting, high quality food photography style, realistic, delicious looking.`;
+
+    const response = await imageAI.models.generateImages({
+      model: 'imagen-4.0-generate-001',
+      prompt: prompt,
+      config: {
+        numberOfImages: 1,
+      },
+    });
+
+    // 이미지 데이터 추출
+    if (response.generatedImages && response.generatedImages.length > 0) {
+      const firstImage = response.generatedImages[0];
+      if (firstImage?.image?.imageBytes) {
+        const imgBytes = firstImage.image.imageBytes;
+        // base64 이미지 데이터 반환
+        return `data:image/png;base64,${imgBytes}`;
+      }
+    }
+
+    // 이미지 생성 실패 시 placeholder 반환
+    return '/placeholder-recipe.jpg';
+  } catch (error) {
+    console.error('이미지 생성 오류:', error);
+    // 에러 발생 시 placeholder 반환
+    return '/placeholder-recipe.jpg';
+  }
+};
 
 const SYSTEM_PROMPT = `당신은 전문 한식 요리사입니다. 주어진 재료로 만들 수 있는 한식 레시피를 추천해주세요.`;
 
@@ -138,10 +174,21 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
+    // 각 레시피에 대한 이미지 생성
+    const recipesWithImages = await Promise.all(
+      jsonResponse.recipes.map(async (recipe) => {
+        const imageUrl = await generateRecipeImage(recipe.title, recipe.description);
+        return {
+          ...recipe,
+          image: imageUrl,
+        };
+      }),
+    );
+
     // 성공 응답 반환
     return NextResponse.json({
       success: true,
-      data: jsonResponse.recipes,
+      data: recipesWithImages,
     } as GenerateRecipesResponse);
   } catch (error) {
     console.error('레시피 생성 API 오류:', error);
