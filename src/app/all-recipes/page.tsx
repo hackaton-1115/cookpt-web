@@ -5,18 +5,27 @@ import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
+import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
 import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function AllRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
         const allRecipes = await loadGeneratedRecipes();
         setRecipes(allRecipes);
+
+        // 좋아요 상태 확인
+        if (allRecipes.length > 0) {
+          const recipeIds = allRecipes.map((r) => r.id);
+          const liked = await checkMultipleRecipesLiked(recipeIds);
+          setLikedRecipes(liked);
+        }
       } catch (error) {
         console.error('레시피 불러오기 실패:', error);
       } finally {
@@ -52,7 +61,7 @@ export default function AllRecipesPage() {
         ) : (
           <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard key={recipe.id} recipe={recipe} initialLiked={likedRecipes[recipe.id]} />
             ))}
           </div>
         )}

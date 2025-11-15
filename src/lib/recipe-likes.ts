@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { createClient } from './supabase/client';
 
 /**
  * 세션 ID 생성 또는 가져오기 (익명 사용자용)
@@ -13,25 +13,35 @@ const getSessionId = (): string => {
 };
 
 /**
+ * Supabase 클라이언트 인스턴스 가져오기
+ */
+const getSupabase = () => createClient();
+
+/**
  * 레시피 좋아요 토글
  */
 export const toggleRecipeLike = async (recipeId: string): Promise<boolean> => {
   try {
+    const supabase = getSupabase();
+
     // 현재 사용자 확인
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     const userId = user?.id || null;
-    const sessionId = userId ? null : getSessionId();
+    const sessionId = !userId ? getSessionId() : null;
 
     // 이미 좋아요 했는지 확인
-    const { data: existingLike } = await supabase
-      .from('recipe_likes')
-      .select('id')
-      .eq('recipe_id', recipeId)
-      .eq(userId ? 'user_id' : 'session_id', userId || sessionId)
-      .maybeSingle();
+    let query = supabase.from('recipe_likes').select('id').eq('recipe_id', recipeId);
+
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else if (sessionId) {
+      query = query.eq('session_id', sessionId);
+    }
+
+    const { data: existingLike } = await query.maybeSingle();
 
     if (existingLike) {
       // 좋아요 취소
@@ -57,19 +67,24 @@ export const toggleRecipeLike = async (recipeId: string): Promise<boolean> => {
  */
 export const checkRecipeLiked = async (recipeId: string): Promise<boolean> => {
   try {
+    const supabase = getSupabase();
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     const userId = user?.id || null;
-    const sessionId = userId ? null : getSessionId();
+    const sessionId = !userId ? getSessionId() : null;
 
-    const { data } = await supabase
-      .from('recipe_likes')
-      .select('id')
-      .eq('recipe_id', recipeId)
-      .eq(userId ? 'user_id' : 'session_id', userId || sessionId)
-      .maybeSingle();
+    let query = supabase.from('recipe_likes').select('id').eq('recipe_id', recipeId);
+
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else if (sessionId) {
+      query = query.eq('session_id', sessionId);
+    }
+
+    const { data } = await query.maybeSingle();
 
     return !!data;
   } catch (error) {
@@ -85,18 +100,24 @@ export const checkMultipleRecipesLiked = async (
   recipeIds: string[]
 ): Promise<Record<string, boolean>> => {
   try {
+    const supabase = getSupabase();
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     const userId = user?.id || null;
-    const sessionId = userId ? null : getSessionId();
+    const sessionId = !userId ? getSessionId() : null;
 
-    const { data } = await supabase
-      .from('recipe_likes')
-      .select('recipe_id')
-      .in('recipe_id', recipeIds)
-      .eq(userId ? 'user_id' : 'session_id', userId || sessionId);
+    let query = supabase.from('recipe_likes').select('recipe_id').in('recipe_id', recipeIds);
+
+    if (userId) {
+      query = query.eq('user_id', userId);
+    } else if (sessionId) {
+      query = query.eq('session_id', sessionId);
+    }
+
+    const { data } = await query;
 
     const likedMap: Record<string, boolean> = {};
     recipeIds.forEach((id) => {
