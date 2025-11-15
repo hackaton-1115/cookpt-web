@@ -2,6 +2,7 @@
 
 import { Camera, Upload, X } from 'lucide-react';
 
+import Image from 'next/image';
 import { useState, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -146,11 +147,15 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
           >
             <X className='h-4 w-4' />
           </Button>
-          <img
-            src={preview || '/placeholder.svg'}
-            alt='Uploaded ingredients'
-            className='h-auto max-h-96 w-full object-cover'
-          />
+          <div className='relative h-96 w-full'>
+            <Image
+              src={preview || '/placeholder.svg'}
+              alt='Uploaded ingredients'
+              fill
+              className='object-cover'
+              unoptimized
+            />
+          </div>
         </Card>
       )}
     </div>

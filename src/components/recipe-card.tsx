@@ -1,5 +1,6 @@
 import { Clock, Users, ChefHat } from 'lucide-react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
@@ -24,10 +25,11 @@ export function RecipeCard({ recipe, matchPercentage }: RecipeCardProps) {
     <Link href={`/recipes/${recipe.id}`}>
       <Card className='group h-full cursor-pointer overflow-hidden transition-shadow hover:shadow-lg'>
         <div className='relative h-40 overflow-hidden sm:h-48'>
-          <img
+          <Image
             src={recipe.image || '/placeholder.svg'}
             alt={recipe.title}
-            className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-105'
+            fill
+            className='object-cover transition-transform duration-300 group-hover:scale-105'
           />
           {matchPercentage !== undefined && matchPercentage > 0 && (
             <div className='bg-primary text-primary-foreground absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs font-semibold sm:top-3 sm:right-3 sm:px-3 sm:py-1 sm:text-sm'>

@@ -1,7 +1,7 @@
-import { RecognizedIngredient } from './types';
+import { Recipe, RecognizedIngredient } from './types';
 
 // Simulated AI ingredient recognition
-export async function recognizeIngredients(imageData: string): Promise<RecognizedIngredient[]> {
+export async function recognizeIngredients(): Promise<RecognizedIngredient[]> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -20,12 +20,12 @@ export async function recognizeIngredients(imageData: string): Promise<Recognize
 }
 
 // Match recipes based on recognized ingredients
-export function findMatchingRecipes(ingredients: string[], allRecipes: any[]) {
+export function findMatchingRecipes(ingredients: string[], allRecipes: Recipe[]) {
   const ingredientLower = ingredients.map((i) => i.toLowerCase());
 
   return allRecipes
     .map((recipe) => {
-      const recipeIngredients = recipe.ingredients.map((i: any) => i.name.toLowerCase());
+      const recipeIngredients = recipe.ingredients.map((i) => i.name.toLowerCase());
       const matchCount = ingredientLower.filter((ing) =>
         recipeIngredients.some((recIng: string) => recIng.includes(ing)),
       ).length;

@@ -1,4 +1,4 @@
-import { Zap, Microwave, Clock, Leaf, Flame, UtensilsCrossed } from 'lucide-react';
+import { Zap, Microwave, Clock, Leaf, Flame, UtensilsCrossed, LucideIcon } from 'lucide-react';
 
 import { Recipe } from './types';
 
@@ -6,7 +6,7 @@ export interface RecipeTheme {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   filterFn: (recipe: Recipe) => boolean;
 }
 

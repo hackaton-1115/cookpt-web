@@ -1,5 +1,6 @@
 import { ArrowLeft, Clock, Users, ChefHat, Flame } from 'lucide-react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -44,10 +45,11 @@ export default function RecipeDetailPage({ params }: { params: { id: string } })
           <div className='space-y-4 sm:space-y-6 md:col-span-3'>
             <div>
               <div className='relative mb-3 h-56 overflow-hidden rounded-lg sm:mb-4 sm:h-72 md:h-96'>
-                <img
+                <Image
                   src={recipe.image || '/placeholder.svg'}
                   alt={recipe.title}
-                  className='h-full w-full object-cover'
+                  fill
+                  className='object-cover'
                 />
               </div>
 

@@ -3,7 +3,7 @@
 import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 
 import { RecipeCard } from '@/components/recipe-card';
 import { RecipeFilters } from '@/components/recipe-filters';

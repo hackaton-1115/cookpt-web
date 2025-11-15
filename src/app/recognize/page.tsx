@@ -2,6 +2,7 @@
 
 import { Loader2, Search, ArrowLeft } from 'lucide-react';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ export default function RecognizePage() {
     setImageData(storedImage);
 
     // Simulate AI recognition
-    recognizeIngredients(storedImage).then((recognized) => {
+    recognizeIngredients().then((recognized) => {
       setIngredients(recognized);
       // Auto-select all ingredients with confidence > 80%
       const autoSelected = new Set(recognized.filter((i) => i.confidence > 0.8).map((i) => i.name));
@@ -88,11 +89,15 @@ export default function RecognizePage() {
         <div className='mb-6 grid grid-cols-1 gap-4 sm:mb-8 sm:gap-6 md:grid-cols-2'>
           <div>
             <Card className='mb-3 overflow-hidden sm:mb-4'>
-              <img
-                src={imageData || '/placeholder.svg'}
-                alt='Uploaded ingredients'
-                className='h-auto max-h-64 w-full object-cover sm:max-h-80'
-              />
+              <div className='relative h-64 w-full sm:h-80'>
+                <Image
+                  src={imageData || '/placeholder.svg'}
+                  alt='Uploaded ingredients'
+                  fill
+                  className='object-cover'
+                  unoptimized
+                />
+              </div>
             </Card>
             <p className='text-muted-foreground text-center text-xs sm:text-sm'>
               Your uploaded photo
