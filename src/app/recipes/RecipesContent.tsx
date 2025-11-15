@@ -9,7 +9,6 @@ import { RecipeCard } from '@/components/RecipeCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { generateRecipes } from '@/lib/edge-functions';
-import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
@@ -30,15 +29,6 @@ export default function RecipesContent() {
       }
 
       const ingredients = ingredientsParam.split(',').map((i) => i.trim());
-
-      // 기존에 생성된 레시피가 있는지 확인
-      const existingRecipes = await loadGeneratedRecipes();
-      if (existingRecipes.length > 0) {
-        // 이미 생성된 레시피가 있으면 재사용
-        setRecipes(existingRecipes);
-        setLoading(false);
-        return;
-      }
 
       // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {

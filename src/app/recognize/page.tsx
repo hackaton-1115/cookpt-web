@@ -1,15 +1,17 @@
-'use client';
+import { Suspense } from 'react';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import RecognizeContent from '@/app/recognize/RecognizeContent';
 
 export default function RecognizePage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // select-preferences로 리다이렉트
-    router.push('/select-preferences');
-  }, [router]);
-
-  return null;
+  return (
+    <Suspense
+      fallback={
+        <div className='bg-background flex min-h-screen items-center justify-center'>
+          <p className='text-muted-foreground'>로딩 중...</p>
+        </div>
+      }
+    >
+      <RecognizeContent />
+    </Suspense>
+  );
 }

@@ -1,10 +1,19 @@
 'use client';
 
-import { AlertCircle, ArrowLeft, ArrowRight, ChefHat, Flame, Loader2, UtensilsCrossed, Utensils } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  ChefHat,
+  Flame,
+  Loader2,
+  UtensilsCrossed,
+  Utensils,
+} from 'lucide-react';
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CookingToolCard } from '@/components/CookingToolCard';
 import { CuisineCard } from '@/components/CuisineCard';
@@ -15,37 +24,41 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { COOKING_TOOLS } from '@/lib/cooking-tool-data';
 import { CUISINES } from '@/lib/cuisine-data';
+import { getImageUrl } from '@/lib/image-storage';
 import { recognizeIngredients } from '@/lib/ingredient-recognition';
-import { clearGeneratedRecipes } from '@/lib/recipe-storage';
 import { getThemesByCategory, THEME_CATEGORIES } from '@/lib/theme-data';
 import { RecognizedIngredient } from '@/lib/types';
 
-const SelectPreferencesContent = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
+export default function RecognizeContent() {
   const [loading, setLoading] = useState<boolean>(true);
   const [imageData, setImageData] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<RecognizedIngredient[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
-
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   useEffect(() => {
-    const storedImage = localStorage.getItem('uploadedImage');
-    if (!storedImage) {
-      router.push('/');
+    // URL 파라미터에서 이미지 경로 가져오기
+    const imagePath = searchParams.get('image');
+
+    if (!imagePath) {
+      router.push('/upload');
       return;
     }
 
-    setImageData(storedImage);
+    // Supabase Storage에서 이미지 URL 가져오기
+    const imageUrl = getImageUrl(imagePath);
+    setImageData(imageUrl);
 
     const fetchIngredients = async () => {
       try {
-        const recognized = await recognizeIngredients(storedImage);
+        // AI가 이미지 URL로 재료 인식
+        const recognized = await recognizeIngredients(imageUrl);
         setIngredients(recognized);
         const autoSelected = new Set(
           recognized.filter((i) => i.confidence > 0.8).map((i) => i.name),
@@ -60,7 +73,7 @@ const SelectPreferencesContent = () => {
     };
 
     fetchIngredients();
-  }, [router]);
+  }, [router, searchParams]);
 
   const toggleTheme = (themeId: string) => {
     setSelectedTheme((prev) => (prev === themeId ? null : themeId));
@@ -130,7 +143,7 @@ const SelectPreferencesContent = () => {
       <div className='container mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8'>
         <Button
           variant='ghost'
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/upload')}
           className='mb-4 sm:mb-6'
           size='sm'
         >
@@ -144,7 +157,7 @@ const SelectPreferencesContent = () => {
             <AlertTitle>오류 발생</AlertTitle>
             <AlertDescription className='mt-2 flex flex-col gap-3'>
               <p>{error}</p>
-              <Button variant='outline' size='sm' onClick={() => router.push('/')}>
+              <Button variant='outline' size='sm' onClick={() => router.push('/upload')}>
                 다시 시도
               </Button>
             </AlertDescription>
@@ -183,9 +196,7 @@ const SelectPreferencesContent = () => {
                   />
                 </div>
               </Card>
-              <p className='text-muted-foreground text-center text-xs sm:text-sm'>
-                업로드한 사진
-              </p>
+              <p className='text-muted-foreground text-center text-xs sm:text-sm'>업로드한 사진</p>
             </div>
 
             <div className='space-y-2 sm:space-y-3'>
@@ -289,7 +300,7 @@ const SelectPreferencesContent = () => {
         </div>
 
         {/* 하단 고정 버튼 */}
-        <div className='fixed bottom-0 left-0 right-0 bg-background/95 border-border backdrop-blur-sm border-t'>
+        <div className='bg-background/95 border-border fixed right-0 bottom-0 left-0 border-t backdrop-blur-sm'>
           <div className='container mx-auto max-w-6xl px-4 py-4 sm:px-6'>
             <div className='flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4'>
               <Button
@@ -306,19 +317,5 @@ const SelectPreferencesContent = () => {
         </div>
       </div>
     </main>
-  );
-};
-
-export default function SelectPreferencesPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className='bg-background flex min-h-screen items-center justify-center'>
-          <p className='text-muted-foreground'>로딩 중...</p>
-        </div>
-      }
-    >
-      <SelectPreferencesContent />
-    </Suspense>
   );
 }

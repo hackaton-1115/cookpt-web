@@ -29,7 +29,8 @@ export default function RecipeDetailPage() {
 
   useEffect(() => {
     const loadRecipe = async () => {
-      const id = params.id as string;
+      // URL 파라미터 디코딩 (이중 인코딩 방지)
+      const id = decodeURIComponent(params.id as string);
 
       // Supabase에서 AI 생성 레시피 찾기
       const aiRecipe = await findRecipeById(id);

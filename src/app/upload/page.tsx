@@ -1,19 +1,38 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { ImageUpload } from '@/components/ImageUpload';
 import { Button } from '@/components/ui/button';
+import { uploadImage } from '@/lib/image-storage';
 
 export default function Home() {
   const [imageData, setImageData] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAnalyze = () => {
-    if (imageData) {
-      window.location.href = '/recognize';
+  const router = useRouter();
+
+  const handleAnalyze = async () => {
+    if (!imageData) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      // Supabase Storage에 이미지 업로드
+      const imagePath = await uploadImage(imageData);
+
+      // 업로드 성공 후 이미지 경로를 URL 파라미터로 전달하며 /recognize로 이동
+      router.push(`/recognize?image=${encodeURIComponent(imagePath)}`);
+    } catch (err) {
+      console.error('이미지 업로드 실패:', err);
+      setError(err instanceof Error ? err.message : '이미지 업로드 중 오류가 발생했습니다.');
+      setUploading(false);
     }
   };
 
@@ -33,15 +52,30 @@ export default function Home() {
           <ImageUpload
             onImageSelect={(data) => {
               setImageData(data);
-              localStorage.setItem('uploadedImage', data);
+              setError(null);
             }}
           />
 
+          {error && (
+            <div className='bg-destructive/15 text-destructive border-destructive/50 rounded-lg border p-4 text-center text-sm'>
+              {error}
+            </div>
+          )}
+
           {imageData && (
             <div className='flex justify-center'>
-              <Button onClick={handleAnalyze} size='lg' className='gap-2'>
-                Analyze Ingredients
-                <ArrowRight className='h-5 w-5' />
+              <Button onClick={handleAnalyze} size='lg' className='gap-2' disabled={uploading}>
+                {uploading ? (
+                  <>
+                    <Loader2 className='h-5 w-5 animate-spin' />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    Analyze Ingredients
+                    <ArrowRight className='h-5 w-5' />
+                  </>
+                )}
               </Button>
             </div>
           )}
