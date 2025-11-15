@@ -64,3 +64,6 @@ logs
 
 # zip files
 *.zip
+
+# mcp
+.mcp.json
