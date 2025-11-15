@@ -1,22 +1,33 @@
-import { Recipe, RecognizedIngredient } from './types';
+import { Recipe, RecognizedIngredient, RecognizeImageResponse } from './types';
 
-// Simulated AI ingredient recognition
-export async function recognizeIngredients(): Promise<RecognizedIngredient[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+// AI ingredient recognition using OpenAI Vision API
+export async function recognizeIngredients(imageData: string): Promise<RecognizedIngredient[]> {
+  try {
+    const response = await fetch('/api/recognize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ imageData }),
+    });
 
-  // Mock recognized ingredients based on common Korean cooking ingredients
-  const mockIngredients: RecognizedIngredient[] = [
-    { name: 'Egg', confidence: 0.95, category: 'Protein' },
-    { name: 'Carrot', confidence: 0.92, category: 'Vegetable' },
-    { name: 'Onion', confidence: 0.88, category: 'Vegetable' },
-    { name: 'Green onion', confidence: 0.85, category: 'Vegetable' },
-    { name: 'Garlic', confidence: 0.82, category: 'Seasoning' },
-  ];
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-  // Randomly return 2-4 ingredients
-  const count = Math.floor(Math.random() * 3) + 2;
-  return mockIngredients.slice(0, count);
+    const result: RecognizeImageResponse = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || '재료 인식에 실패했습니다.');
+    }
+
+    return result.data || [];
+  } catch (error) {
+    console.error('Error recognizing ingredients:', error);
+    throw error instanceof Error
+      ? error
+      : new Error('재료 인식 중 알 수 없는 오류가 발생했습니다.');
+  }
 }
 
 // Match recipes based on recognized ingredients

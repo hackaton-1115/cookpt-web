@@ -1,23 +1,26 @@
 'use client';
 
-import { Loader2, Search, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Search } from 'lucide-react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { IngredientCard } from '@/components/IngredientCard';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { recognizeIngredients } from '@/lib/ingredient-recognition';
 import { RecognizedIngredient } from '@/lib/types';
 
 export default function RecognizePage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [imageData, setImageData] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<RecognizedIngredient[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(new Set());
+  const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const storedImage = localStorage.getItem('uploadedImage');
@@ -28,14 +31,22 @@ export default function RecognizePage() {
 
     setImageData(storedImage);
 
-    // Simulate AI recognition
-    recognizeIngredients().then((recognized) => {
-      setIngredients(recognized);
-      // Auto-select all ingredients with confidence > 80%
-      const autoSelected = new Set(recognized.filter((i) => i.confidence > 0.8).map((i) => i.name));
-      setSelectedIngredients(autoSelected);
-      setLoading(false);
-    });
+    // AI recognition with error handling
+    recognizeIngredients(storedImage)
+      .then((recognized) => {
+        setIngredients(recognized);
+        // Auto-select all ingredients with confidence > 80%
+        const autoSelected = new Set(
+          recognized.filter((i) => i.confidence > 0.8).map((i) => i.name),
+        );
+        setSelectedIngredients(autoSelected);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to recognize ingredients:', err);
+        setError(err instanceof Error ? err.message : '재료 인식 중 오류가 발생했습니다.');
+        setLoading(false);
+      });
   }, [router]);
 
   const toggleIngredient = (name: string) => {
@@ -63,7 +74,7 @@ export default function RecognizePage() {
         <div className='text-center'>
           <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
           <h2 className='mb-2 text-xl font-semibold'>Analyzing your image</h2>
-          <p className='text-muted-foreground'>Our AI is identifying the ingredients...</p>
+          <p className='text-muted-foreground'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
         </div>
       </div>
     );
@@ -76,6 +87,19 @@ export default function RecognizePage() {
           <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
           Back
         </Button>
+
+        {error && (
+          <Alert variant='destructive' className='mb-6'>
+            <AlertCircle className='h-4 w-4' />
+            <AlertTitle>오류 발생</AlertTitle>
+            <AlertDescription className='mt-2 flex flex-col gap-3'>
+              <p>{error}</p>
+              <Button variant='outline' size='sm' onClick={() => router.push('/')}>
+                다시 시도
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className='mb-6 sm:mb-8'>
           <h1 className='text-foreground mb-2 text-2xl font-bold sm:mb-3 sm:text-3xl'>

@@ -34,3 +34,14 @@ export interface RecognizedIngredient {
   confidence: number;
   category: string;
 }
+
+// API Request/Response types
+export interface RecognizeImageRequest {
+  imageData: string; // base64 encoded image
+}
+
+export interface RecognizeImageResponse {
+  success: boolean;
+  data?: RecognizedIngredient[];
+  error?: string;
+}
