@@ -1,5 +1,8 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
+
+import NativeAuthProvider from '@/components/NativeAuthProvider';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -33,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang='ko'>
       <body className={`font-sans antialiased`}>
-        {children}
+        <NativeAuthProvider>{children}</NativeAuthProvider>
         <Analytics />
       </body>
     </html>
