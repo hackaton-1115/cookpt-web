@@ -9,12 +9,15 @@ import { RecipeCard } from '@/components/RecipeCard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { generateRecipes } from '@/lib/edge-functions';
+import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
+import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,10 +33,31 @@ export default function RecipesContent() {
 
       const ingredients = ingredientsParam.split(',').map((i) => i.trim());
 
+      // 기존에 생성된 레시피가 있는지 확인
+      const existingRecipes = await loadGeneratedRecipes();
+      if (existingRecipes.length > 0) {
+        // 이미 생성된 레시피가 있으면 재사용
+        setRecipes(existingRecipes);
+
+        // 좋아요 상태 확인
+        const recipeIds = existingRecipes.map((r) => r.id);
+        const liked = await checkMultipleRecipesLiked(recipeIds);
+        setLikedRecipes(liked);
+
+        setLoading(false);
+        return;
+      }
+
       // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {
         const generatedRecipes = await generateRecipes(ingredients);
         setRecipes(generatedRecipes);
+
+        // 좋아요 상태 확인
+        const recipeIds = generatedRecipes.map((r) => r.id);
+        const liked = await checkMultipleRecipesLiked(recipeIds);
+        setLikedRecipes(liked);
+
         setLoading(false);
       } catch (err) {
         console.error('레시피 생성 실패:', err);
@@ -106,7 +130,7 @@ export default function RecipesContent() {
         {!error && recipes.length > 0 && (
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'>
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard key={recipe.id} recipe={recipe} initialLiked={likedRecipes[recipe.id]} />
             ))}
           </div>
         )}

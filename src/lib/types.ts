@@ -27,6 +27,7 @@ export interface Recipe {
   category: string;
   cookingTools: string[];
   tags: string[];
+  likesCount?: number;
 }
 
 export interface RecognizedIngredient {

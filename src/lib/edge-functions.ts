@@ -13,7 +13,7 @@ interface EdgeFunctionResponse<T> {
  * @returns 인식된 재료 목록
  */
 export const recognizeIngredients = async (
-  imageDataOrUrl: string
+  imageDataOrUrl: string,
 ): Promise<RecognizedIngredient[]> => {
   // URL인지 base64인지 판단
   const isUrl = imageDataOrUrl.startsWith('http://') || imageDataOrUrl.startsWith('https://');
@@ -46,7 +46,7 @@ export const generateRecipes = async (ingredients: string[]): Promise<Recipe[]> 
     'generate-recipes',
     {
       body: { ingredients },
-    }
+    },
   );
 
   if (error) {
