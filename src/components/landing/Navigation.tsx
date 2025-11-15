@@ -23,6 +23,12 @@ export function Navigation() {
 
         <div className='hidden items-center gap-8 md:flex'>
           <Link
+            href='/all-recipes'
+            className='text-muted-foreground hover:text-foreground transition-colors'
+          >
+            모든 레시피
+          </Link>
+          <Link
             href='/features'
             className='text-muted-foreground hover:text-foreground transition-colors'
           >
@@ -64,6 +70,13 @@ export function Navigation() {
       {mobileMenuOpen && (
         <div className='border-border/40 bg-background/95 border-t backdrop-blur-sm md:hidden'>
           <div className='container mx-auto space-y-4 px-4 py-6'>
+            <Link
+              href='/all-recipes'
+              className='text-muted-foreground hover:text-foreground block py-2 transition-colors'
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              모든 레시피
+            </Link>
             <Link
               href='/features'
               className='text-muted-foreground hover:text-foreground block py-2 transition-colors'
