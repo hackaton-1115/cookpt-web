@@ -91,7 +91,7 @@ export default function RecipeDetailPage() {
         <Link href='/recipes'>
           <Button variant='ghost' className='mb-4 sm:mb-6' size='sm'>
             <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-            Back to Recipes
+            레시피 목록으로
           </Button>
         </Link>
 
@@ -130,7 +130,7 @@ export default function RecipeDetailPage() {
                 <Button
                   variant='outline'
                   size='lg'
-                  className='flex-shrink-0'
+                  className='shrink-0'
                   onClick={handleLikeClick}
                   disabled={isLiking}
                 >
@@ -145,35 +145,35 @@ export default function RecipeDetailPage() {
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Clock className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{totalTime}</div>
-                  <div className='text-muted-foreground text-xs'>minutes</div>
+                  <div className='text-muted-foreground text-xs'>분</div>
                 </CardContent>
               </Card>
               <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Users className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{recipe.servings}</div>
-                  <div className='text-muted-foreground text-xs'>servings</div>
+                  <div className='text-muted-foreground text-xs'>인분</div>
                 </CardContent>
               </Card>
               <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <ChefHat className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-lg font-bold sm:text-xl'>{recipe.category}</div>
-                  <div className='text-muted-foreground text-xs'>category</div>
+                  <div className='text-muted-foreground text-xs'>카테고리</div>
                 </CardContent>
               </Card>
               <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Flame className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{recipe.nutrition.calories}</div>
-                  <div className='text-muted-foreground text-xs'>calories</div>
+                  <div className='text-muted-foreground text-xs'>칼로리</div>
                 </CardContent>
               </Card>
             </div>
 
             <Card>
-              <CardHeader className='pb-3 sm:pb-6'>
-                <CardTitle className='text-lg sm:text-xl'>Ingredients</CardTitle>
+              <CardHeader>
+                <CardTitle className='text-lg sm:text-xl'>재료</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className='space-y-2 sm:space-y-3'>
@@ -197,8 +197,8 @@ export default function RecipeDetailPage() {
             </Card>
 
             <Card>
-              <CardHeader className='pb-3 sm:pb-6'>
-                <CardTitle className='text-lg sm:text-xl'>Instructions</CardTitle>
+              <CardHeader>
+                <CardTitle className='text-lg sm:text-xl'>조리법</CardTitle>
               </CardHeader>
               <CardContent>
                 <ol className='space-y-3 sm:space-y-4'>
@@ -217,17 +217,17 @@ export default function RecipeDetailPage() {
 
           <div className='space-y-4 sm:space-y-6 md:col-span-2'>
             <Card>
-              <CardHeader className='pb-3 sm:pb-6'>
-                <CardTitle className='text-lg sm:text-xl'>Nutrition Facts</CardTitle>
+              <CardHeader>
+                <CardTitle className='text-lg sm:text-xl'>영양 정보</CardTitle>
                 <p className='text-muted-foreground text-xs sm:text-sm'>
-                  Per serving ({recipe.servings} servings)
+                  1인분 기준 (총 {recipe.servings}인분)
                 </p>
               </CardHeader>
               <CardContent>
                 <div className='space-y-4'>
                   <div>
                     <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Calories</span>
+                      <span className='text-sm font-medium'>칼로리</span>
                       <span className='font-bold'>{recipe.nutrition.calories} kcal</span>
                     </div>
                     <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -244,7 +244,7 @@ export default function RecipeDetailPage() {
 
                   <div>
                     <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Protein</span>
+                      <span className='text-sm font-medium'>단백질</span>
                       <span className='font-bold'>{recipe.nutrition.protein}g</span>
                     </div>
                     <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -259,7 +259,7 @@ export default function RecipeDetailPage() {
 
                   <div>
                     <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Carbs</span>
+                      <span className='text-sm font-medium'>탄수화물</span>
                       <span className='font-bold'>{recipe.nutrition.carbs}g</span>
                     </div>
                     <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -274,7 +274,7 @@ export default function RecipeDetailPage() {
 
                   <div>
                     <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Fat</span>
+                      <span className='text-sm font-medium'>지방</span>
                       <span className='font-bold'>{recipe.nutrition.fat}g</span>
                     </div>
                     <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -289,7 +289,7 @@ export default function RecipeDetailPage() {
 
                   <div>
                     <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Fiber</span>
+                      <span className='text-sm font-medium'>식이섬유</span>
                       <span className='font-bold'>{recipe.nutrition.fiber}g</span>
                     </div>
                     <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -306,8 +306,8 @@ export default function RecipeDetailPage() {
             </Card>
 
             <Card>
-              <CardHeader className='pb-3 sm:pb-6'>
-                <CardTitle className='text-lg sm:text-xl'>Cooking Tools</CardTitle>
+              <CardHeader>
+                <CardTitle className='text-lg sm:text-xl'>조리 도구</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className='flex flex-wrap gap-2'>
@@ -321,23 +321,23 @@ export default function RecipeDetailPage() {
             </Card>
 
             <Card>
-              <CardHeader className='pb-3 sm:pb-6'>
-                <CardTitle className='text-lg sm:text-xl'>Time Breakdown</CardTitle>
+              <CardHeader>
+                <CardTitle className='text-lg sm:text-xl'>조리 시간</CardTitle>
               </CardHeader>
               <CardContent className='space-y-3'>
                 <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground text-sm'>Prep Time</span>
-                  <span className='font-semibold'>{recipe.prepTime} min</span>
+                  <span className='text-muted-foreground text-sm'>준비 시간</span>
+                  <span className='font-semibold'>{recipe.prepTime}분</span>
                 </div>
                 <Separator />
                 <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground text-sm'>Cook Time</span>
-                  <span className='font-semibold'>{recipe.cookTime} min</span>
+                  <span className='text-muted-foreground text-sm'>조리 시간</span>
+                  <span className='font-semibold'>{recipe.cookTime}분</span>
                 </div>
                 <Separator />
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm font-semibold'>Total Time</span>
-                  <span className='text-primary font-bold'>{totalTime} min</span>
+                  <span className='text-sm font-semibold'>총 시간</span>
+                  <span className='text-primary font-bold'>{totalTime}분</span>
                 </div>
               </CardContent>
             </Card>
