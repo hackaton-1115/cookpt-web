@@ -27,6 +27,7 @@ export default function RecipesContent() {
       const themeParam = searchParams.get('theme');
       const cuisineParam = searchParams.get('cuisine');
       const toolsParam = searchParams.get('tools');
+      const generationIdParam = searchParams.get('generationId');
 
       // 재료가 없으면 홈으로 리다이렉트
       if (!ingredientsParam) {
@@ -36,21 +37,44 @@ export default function RecipesContent() {
 
       const ingredients = ingredientsParam.split(',').map((i) => i.trim());
 
-      // 요청 객체 구성
-      const request: GenerateRecipesRequest = {
-        ingredients,
-        theme: themeParam || undefined,
-        cuisine: cuisineParam || undefined,
-        tools: toolsParam ? toolsParam.split(',') : undefined,
-      };
+      // 캐시 키 생성 (조건 + generationId 조합)
+      const cacheKey = `recipes_${ingredientsParam}_${themeParam || ''}_${cuisineParam || ''}_${toolsParam || ''}_${generationIdParam || ''}`;
 
-      // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {
         setLoading(true);
         setError(null);
 
+        // 1. SessionStorage에서 캐시 확인
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          console.log('캐시된 레시피 사용:', cacheKey);
+          const cachedRecipes: Recipe[] = JSON.parse(cached);
+          setRecipes(cachedRecipes);
+
+          // 좋아요 상태 확인
+          const recipeIds = cachedRecipes.map((r) => r.id);
+          const liked = await checkMultipleRecipesLiked(recipeIds);
+          setLikedRecipes(liked);
+          setLoading(false);
+          return;
+        }
+
+        // 2. 캐시가 없으면 AI 레시피 생성
+        console.log('새로운 레시피 생성:', cacheKey);
+
+        // 요청 객체 구성
+        const request: GenerateRecipesRequest = {
+          ingredients,
+          theme: themeParam || undefined,
+          cuisine: cuisineParam || undefined,
+          tools: toolsParam ? toolsParam.split(',') : undefined,
+        };
+
         const generatedRecipes = await generateRecipes(request);
         setRecipes(generatedRecipes);
+
+        // 3. SessionStorage에 캐시 저장
+        sessionStorage.setItem(cacheKey, JSON.stringify(generatedRecipes));
 
         // 좋아요 상태 확인
         const recipeIds = generatedRecipes.map((r) => r.id);

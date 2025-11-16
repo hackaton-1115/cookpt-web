@@ -43,7 +43,7 @@ const buildRecipePrompt = (params: {
 }): string => {
   const { ingredients, theme, cuisine, tools } = params;
   let prompt =
-    '당신은 전문 요리 레시피 작성가입니다. 다음 조건에 맞는 레시피를 최대 9개까지 작성해주세요.\n\n';
+    '당신은 전문 요리 레시피 작성가입니다. 다음 조건에 맞는 레시피를 최대 9개까지 작성해주세요.\n⚠️ 중요: 모든 레시피는 반드시 한국어로 작성해야 합니다.\n\n';
 
   // 재료 목록
   prompt += '### 사용 가능한 재료\n';
@@ -139,6 +139,8 @@ const buildRecipePrompt = (params: {
   prompt +=
     '7. 레시피는 최소 3개, 최대 9개까지 작성하세요. 조건이 제한적이면 3개만 작성해도 됩니다.\n';
   prompt += '8. 각 레시피는 서로 다른 요리여야 합니다. 비슷한 레시피를 반복하지 마세요.\n';
+  prompt +=
+    '9. 모든 필드(title, description, instructions 등)는 반드시 한국어로 작성해야 합니다.\n';
 
   return prompt;
 };

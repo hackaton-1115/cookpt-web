@@ -123,6 +123,11 @@ export default function RecognizeContent() {
     if (selectedTools.size > 0) {
       params.set('tools', Array.from(selectedTools).join(','));
     }
+
+    // 버튼 클릭 시마다 고유한 generation ID 생성 (캐싱 제어용)
+    const generationId = Date.now();
+    params.set('generationId', generationId.toString());
+
     router.push(`/recipes?${params.toString()}`);
   };
 
