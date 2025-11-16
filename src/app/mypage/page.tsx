@@ -89,14 +89,17 @@ export default function MyPage() {
 
   if (needsLogin) {
     return (
-      <main className='bg-background min-h-screen py-8'>
+      <main className='min-h-screen bg-[#fafafa] py-8'>
         <div className='container mx-auto px-4'>
-          <div className='mb-8'>
-            <div className='mb-2 flex items-center gap-2'>
-              <User className='h-8 w-8' />
-              <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+          {/* 페이지 헤더 */}
+          <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+            <div className='mb-3 flex items-center gap-3'>
+              <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                <User className='h-6 w-6 text-white' />
+              </div>
+              <h1 className='pixel-text text-base text-[#5d4037]'>마이페이지</h1>
             </div>
-            <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+            <p className='text-sm text-[#5d4037]/70'>내 정보와 활동을 확인하세요</p>
           </div>
           <LoginRequired
             icon={User}

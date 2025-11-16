@@ -46,7 +46,7 @@ export const useLogin = () => {
     }
 
     return (
-      <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
+      <LoginDialog isOpen={isLoginDialogOpen} onClose={() => setIsLoginDialogOpen(false)} />
     );
   };
 
