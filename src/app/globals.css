@@ -1,69 +1,93 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
-
-  /* Updated to AI-focused color scheme with Deep Navy base and Tech Cyan/Purple accents */
-
-  /* Base Colors - Trust & Stability */
-  --color-primary: #1e40af; /* Deep Blue (남색) - for navigation, headers, trust elements */
-  --color-primary-foreground: #ffffff;
-
-  /* Neutral colors - Cool/Warm Gray for backgrounds */
-  --color-background: #fafbfc;
-  --color-foreground: #142136;
-  --color-muted: #e5e9f0; /* Cool Gray */
-  --color-muted-foreground: #4a5568;
-
-  /* AI Accent - Tech Cyan for AI features */
-  --color-accent: #18a0fb; /* Tech Cyan - for AI elements, insights, predictions */
-  --color-accent-foreground: #ffffff;
-
-  /* Secondary AI Accent - Neural Purple */
-  --color-secondary: #a774ff; /* Neural Purple - for additional AI elements */
-  --color-secondary-foreground: #ffffff;
-
-  /* Food Accent - Tangerine for CTAs */
-  --color-cta: #ff8f3c; /* Tangerine - for call-to-action buttons */
-  --color-cta-foreground: #ffffff;
-
-  /* Food Accent - Coral for highlights */
-  --color-highlight: #ff6f61; /* Coral - subtle food-related accents */
-  --color-highlight-foreground: #ffffff;
-
-  /* Card and border colors */
-  --color-card: #ffffff;
-  --color-card-foreground: #142136;
-  --color-border: #e2e8f0;
-
-  /* Semantic colors */
-  --color-destructive: #dc2626;
-  --color-destructive-foreground: #ffffff;
-
-  /* Radius */
-  --radius: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  @theme inline {
-    /* Updated dark mode to maintain the Deep Navy theme */
-    --color-background: #0a0f1a;
-    --color-foreground: #e5e9f0;
-    --color-muted: #1a2332;
-    --color-muted-foreground: #94a3b8;
-    --color-card: #142136;
-    --color-card-foreground: #e5e9f0;
-    --color-border: #2d3748;
+/* Pixel Art Style - 16-bit retro design system */
+@layer utilities {
+  /* Pixel Text */
+  .pixel-text {
+    font-family: var(--font-pixel), 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    word-spacing: -0.1em;
+    image-rendering: pixelated;
+    line-height: 1.6;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  /* Pixel Button */
+  .pixel-button {
+    border-radius: 0;
+    image-rendering: pixelated;
+    transition: all 0.1s cubic-bezier(0.4, 0, 1, 1);
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .pixel-button:active {
+    transform: translate(2px, 2px) !important;
+  }
+
+  /* Pixel Shadow Utilities */
+  .pixel-shadow {
+    box-shadow: 8px 8px 0px 0px rgba(93, 64, 55, 1);
+  }
+
+  .pixel-shadow-sm {
+    box-shadow: 4px 4px 0px 0px rgba(93, 64, 55, 1);
+  }
+
+  .pixel-shadow-none {
+    box-shadow: none;
+  }
+
+  /* Pixel Animation */
+  @keyframes pixel-rotate {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+  }
+
+  .pixel-rotate {
+    animation: pixel-rotate 8s ease-in-out infinite;
+  }
+
+  /* Pixel Corners (optional) */
+  .pixel-corners {
+    border-radius: 0;
+    clip-path: polygon(
+      0 4px,
+      4px 4px,
+      4px 0,
+      calc(100% - 4px) 0,
+      calc(100% - 4px) 4px,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 4px) calc(100% - 4px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      4px calc(100% - 4px),
+      0 calc(100% - 4px)
+    );
+  }
+
+  /* Pixel Border */
+  .pixel-border {
+    border-width: 4px;
+    border-style: solid;
+    border-color: #5d4037;
+  }
+
+  .pixel-border-thin {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #5d4037;
+  }
+
+  /* Pixelated Image Rendering */
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
   }
 }

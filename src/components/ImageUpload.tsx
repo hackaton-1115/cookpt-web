@@ -1,12 +1,9 @@
 'use client';
 
-import { Camera, Upload, X } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 
 import Image from 'next/image';
 import { useState, useRef } from 'react';
-
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 
 interface ImageUploadProps {
   onImageSelect: (imageData: string) => void;
@@ -27,16 +24,6 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
         onImageSelect(result);
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
     }
   };
 
@@ -65,99 +52,53 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
   };
 
   return (
-    <div className='w-full'>
-      <input
-        ref={fileInputRef}
-        type='file'
-        accept='image/*'
-        onChange={handleChange}
-        className='hidden'
-        id='image-upload'
-      />
-
+    <div className='border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
       {!preview ? (
-        <Card
-          className={`border-2 border-dashed transition-colors ${
-            dragActive
-              ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25 hover:border-primary/50'
-          }`}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
+        <div
           onDrop={handleDrop}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          className={`flex aspect-video flex-col items-center justify-center border-4 border-dashed ${
+            dragActive ? 'border-[#ff5252] bg-[#ff5252]/10' : 'border-[#5d4037]/30 bg-white'
+          } cursor-pointer p-12 text-center transition-all`}
+          onClick={() => fileInputRef.current?.click()}
         >
-          <div className='flex flex-col items-center justify-center gap-3 p-6 sm:gap-4 sm:p-12'>
-            <div className='flex gap-3 sm:gap-4'>
-              <div className='bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full sm:h-16 sm:w-16'>
-                <Camera className='text-primary h-6 w-6 sm:h-8 sm:w-8' />
-              </div>
-              <div className='bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full sm:h-16 sm:w-16'>
-                <Upload className='text-primary h-6 w-6 sm:h-8 sm:w-8' />
-              </div>
-            </div>
-
-            <div className='text-center'>
-              <p className='text-foreground text-base font-semibold sm:text-lg'>
-                재료 사진 업로드
-              </p>
-              <p className='text-muted-foreground mt-1 text-xs sm:text-sm'>
-                드래그 앤 드롭 또는 클릭하여 선택하세요
-              </p>
-            </div>
-
-            <div className='flex w-full flex-col gap-2 px-4 sm:w-auto sm:flex-row sm:gap-3 sm:px-0'>
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                variant='default'
-                className='w-full sm:w-auto'
-              >
-                <Upload className='mr-2 h-4 w-4' />
-                파일 선택
-              </Button>
-              <Button
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = 'image/*';
-                  input.capture = 'environment';
-                  input.onchange = (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) handleFile(file);
-                  };
-                  input.click();
-                }}
-                variant='outline'
-                className='w-full sm:w-auto'
-              >
-                <Camera className='mr-2 h-4 w-4' />
-                사진 촬영
-              </Button>
-            </div>
-
-            <p className='text-muted-foreground text-xs'>JPG, PNG, WEBP 지원</p>
-          </div>
-        </Card>
+          <Upload
+            className='mx-auto mb-4 h-16 w-16 text-[#5d4037]/50'
+            style={{ imageRendering: 'pixelated' }}
+          />
+          <p className='pixel-text mb-2 text-xs text-[#5d4037]'>
+            {dragActive ? '여기에 이미지 놓기' : '클릭하거나 이미지 드롭'}
+          </p>
+          <p className='text-xs text-[#5d4037]/60'>식재료 사진을 업로드하세요</p>
+          <input
+            ref={fileInputRef}
+            type='file'
+            accept='image/*'
+            onChange={handleChange}
+            className='hidden'
+          />
+        </div>
       ) : (
-        <Card className='relative overflow-hidden py-0'>
-          <Button
+        <div className='relative aspect-video'>
+          <Image
+            src={preview}
+            alt='업로드된 재료'
+            fill
+            className='border-4 border-[#5d4037] object-cover'
+            style={{ imageRendering: 'pixelated' }}
+            unoptimized
+          />
+          <button
             onClick={clearImage}
-            variant='destructive'
-            size='icon'
-            className='absolute top-2 right-2 z-10 h-8 w-8 rounded-full'
+            className='pixel-button absolute top-2 right-2 z-10 cursor-pointer border-2 border-[#5d4037] bg-[#ff5252] p-2 text-white transition-colors hover:bg-[#e63946]'
           >
             <X className='h-4 w-4' />
-          </Button>
-          <div className='relative h-96 w-full'>
-            <Image
-              src={preview || '/placeholder.svg'}
-              alt='업로드된 재료'
-              fill
-              className='object-cover'
-              unoptimized
-            />
-          </div>
-        </Card>
+          </button>
+        </div>
       )}
     </div>
   );

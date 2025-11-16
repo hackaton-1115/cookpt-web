@@ -1,70 +1,48 @@
-'use client';
+import { ChefHat } from 'lucide-react';
 
-import { Loader2 } from 'lucide-react';
+import { RecipeGrid } from '@/components/RecipeGrid';
+import PixelPagination from '@/components/ui/pixel-pagination';
+import { loadRecipesPaginated } from '@/lib/recipe-storage';
 
-import { useEffect, useState } from 'react';
+const PAGE_SIZE = 12;
 
-import { RecipeCard } from '@/components/RecipeCard';
-import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
-import { loadGeneratedRecipes } from '@/lib/recipe-storage';
-import { Recipe } from '@/lib/types';
+export default async function AllRecipesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const currentPage = Number(params.page) || 1;
 
-export default function AllRecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
+  // 페이지네이션된 레시피 데이터 가져오기
+  const { recipes, totalCount } = await loadRecipesPaginated(currentPage, PAGE_SIZE);
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const allRecipes = await loadGeneratedRecipes();
-        setRecipes(allRecipes);
-
-        // 좋아요 상태 확인
-        if (allRecipes.length > 0) {
-          const recipeIds = allRecipes.map((r) => r.id);
-          const liked = await checkMultipleRecipesLiked(recipeIds);
-          setLikedRecipes(liked);
-        }
-      } catch (error) {
-        console.error('레시피 불러오기 실패:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecipes();
-  }, []);
-
-  return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
-      <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>레시피를 불러오는 중...</h2>
-      </div>
-    </div>
-  ) : (
-    <main className='bg-background min-h-screen py-8'>
+  return (
+    <main className='min-h-screen bg-[#fafafa] py-8'>
       <div className='container mx-auto px-4'>
-        <div className='mb-8'>
-          <h1 className='text-foreground mb-2 text-3xl font-bold'>모든 레시피</h1>
-          <p className='text-muted-foreground'>
-            AI가 생성한 모든 레시피를 확인하세요 ({recipes.length}개)
+        {/* 페이지 헤더 */}
+        <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+          <div className='mb-3 flex items-center gap-3'>
+            <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-6 w-6 text-white' />
+            </div>
+            <h1 className='pixel-text text-base text-[#5d4037]'>모든 레시피</h1>
+          </div>
+          <p className='text-sm text-[#5d4037]/70'>
+            AI가 생성한 모든 레시피를 확인하세요 ({totalCount}개)
           </p>
         </div>
 
-        {recipes.length === 0 ? (
-          <div className='text-muted-foreground py-12 text-center'>
-            <p className='mb-4 text-lg'>아직 생성된 레시피가 없습니다.</p>
-            <p>재료 사진을 업로드하여 첫 레시피를 만들어보세요!</p>
-          </div>
-        ) : (
-          <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-            {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} initialLiked={likedRecipes[recipe.id]} />
-            ))}
-          </div>
-        )}
+        {/* 레시피 그리드 */}
+        <RecipeGrid recipes={recipes} />
+
+        {/* 페이지네이션 */}
+        <PixelPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath='/all-recipes'
+        />
       </div>
     </main>
   );

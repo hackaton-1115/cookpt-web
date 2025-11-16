@@ -1,125 +1,88 @@
-'use client';
+import { ChefHat } from 'lucide-react';
 
-import { ChefHat, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { MyRecipesLoginRequired } from '@/components/MyRecipesLoginRequired';
+import { RecipeGrid } from '@/components/RecipeGrid';
+import PixelPagination from '@/components/ui/pixel-pagination';
+import { findRecipesByUserIdPaginated } from '@/lib/recipe-storage';
+import { createClient } from '@/lib/supabase/server';
 
-import { LoginRequired } from '@/components/LoginRequired';
-import { RecipeCard } from '@/components/RecipeCard';
-import { Button } from '@/components/ui/button';
-import { useLogin } from '@/hooks/useLogin';
-import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
-import { findRecipesByUserId } from '@/lib/recipe-storage';
-import { createClient } from '@/lib/supabase/client';
-import { Recipe } from '@/lib/types';
+const PAGE_SIZE = 12;
 
-export default function MyRecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
-  const [needsLogin, setNeedsLogin] = useState<boolean>(false);
+export default async function MyRecipesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const currentPage = Number(params.page) || 1;
 
-  const router = useRouter();
-  const { requestLogin, LoginDialogComponent } = useLogin();
+  // 서버에서 사용자 정보 가져오기
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    const loadMyRecipes = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        // 로그인하지 않은 경우 로그인 필요 상태로 설정
-        setNeedsLogin(true);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // 내가 만든 레시피 가져오기
-        const myRecipes = await findRecipesByUserId(user.id);
-        setRecipes(myRecipes);
-
-        // 좋아요 상태 확인
-        if (myRecipes.length > 0) {
-          const recipeIds = myRecipes.map((r) => r.id);
-          const liked = await checkMultipleRecipesLiked(recipeIds);
-          setLikedRecipes(liked);
-        }
-      } catch (error) {
-        console.error('내 레시피 불러오기 실패:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMyRecipes();
-  }, [router, requestLogin]);
-
-  if (loading) {
-    return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
-        <div className='text-center'>
-          <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-          <h2 className='mb-2 text-xl font-semibold'>내 레시피를 불러오는 중...</h2>
-        </div>
-      </div>
-    );
+  // 로그인하지 않은 경우
+  if (!user) {
+    return <MyRecipesLoginRequired />;
   }
 
-  if (needsLogin) {
-    return (
-      <main className='bg-background min-h-screen py-8'>
-        <div className='container mx-auto px-4'>
-          <div className='mb-8'>
-            <div className='mb-2 flex items-center gap-2'>
-              <ChefHat className='text-primary h-8 w-8' />
-              <h1 className='text-foreground text-3xl font-bold'>내 레시피</h1>
-            </div>
-            <p className='text-muted-foreground'>내가 만든 레시피를 확인하세요</p>
-          </div>
-          <LoginRequired
-            icon={ChefHat}
-            message='내 레시피를 보려면 로그인해주세요'
-            onLoginClick={requestLogin}
-          />
-        </div>
-        <LoginDialogComponent />
-      </main>
-    );
-  }
+  // 페이지네이션된 레시피 데이터 가져오기
+  const { recipes, totalCount } = await findRecipesByUserIdPaginated(
+    user.id,
+    currentPage,
+    PAGE_SIZE,
+  );
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <main className='bg-background min-h-screen py-8'>
+    <main className='min-h-screen bg-[#fafafa] py-8'>
       <div className='container mx-auto px-4'>
-        <div className='mb-8'>
-          <div className='mb-2 flex items-center gap-2'>
-            <ChefHat className='text-primary h-8 w-8' />
-            <h1 className='text-foreground text-3xl font-bold'>내 레시피</h1>
+        {/* 페이지 헤더 */}
+        <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+          <div className='mb-3 flex items-center gap-3'>
+            <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-6 w-6 text-white' />
+            </div>
+            <h1 className='pixel-text text-base text-[#5d4037]'>내 레시피</h1>
           </div>
-          <p className='text-muted-foreground'>
-            {recipes.length > 0
-              ? `${recipes.length}개의 레시피를 만들었습니다`
+          <p className='text-sm text-[#5d4037]/70'>
+            {totalCount > 0
+              ? `${totalCount}개의 레시피를 만들었습니다`
               : '아직 만든 레시피가 없습니다'}
           </p>
         </div>
 
+        {/* 레시피 그리드 또는 빈 상태 */}
         {recipes.length === 0 ? (
-          <div className='py-12 text-center'>
-            <ChefHat className='text-muted-foreground mx-auto mb-4 h-16 w-16' />
-            <p className='text-muted-foreground mb-4 text-lg'>
-              아직 만든 레시피가 없습니다.
+          <div className='py-16 text-center'>
+            {/* 빈 상태 아이콘 박스 */}
+            <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-12 w-12 text-[#5d4037]/50' />
+            </div>
+            <h3 className='pixel-text mb-3 text-sm text-[#5d4037]'>아직 만든 레시피가 없습니다</h3>
+            <p className='mx-auto mb-6 max-w-md text-sm text-[#5d4037]/60'>
+              재료 사진을 업로드하고 나만의 레시피를 만들어보세요!
             </p>
-            <Button onClick={() => router.push('/upload')}>새 레시피 만들기</Button>
+            <Link
+              href='/upload'
+              className='inline-flex items-center gap-2 border-4 border-[#5d4037] bg-[#ff5252] px-8 py-4 text-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'
+            >
+              <span className='pixel-text text-xs'>새 레시피 만들기</span>
+            </Link>
           </div>
         ) : (
-          <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-            {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} initialLiked={likedRecipes[recipe.id]} />
-            ))}
-          </div>
+          <>
+            <RecipeGrid recipes={recipes} />
+            {/* 페이지네이션 */}
+            <PixelPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              basePath='/my-recipes'
+            />
+          </>
         )}
       </div>
     </main>

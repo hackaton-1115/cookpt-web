@@ -1,25 +1,22 @@
 'use client';
 
-import { ArrowLeft, ChefHat, Clock, Flame, Heart, Loader2, Users } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, Flame, Heart, Users } from 'lucide-react';
 
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { useLogin } from '@/hooks/useLogin';
 import { checkRecipeLiked, toggleRecipeLike } from '@/lib/recipe-likes';
 import { findRecipeById } from '@/lib/recipe-storage';
 import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
 
-const difficultyColor = {
-  easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-  hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
+const difficultyLabels = {
+  easy: '쉬움',
+  medium: '보통',
+  hard: '어려움',
 };
 
 export default function RecipeDetailPage() {
@@ -87,278 +84,245 @@ export default function RecipeDetailPage() {
   const totalTime = recipe ? recipe.prepTime + recipe.cookTime : 0;
 
   return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
       <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <p className='text-muted-foreground'>레시피를 불러오는 중...</p>
+        {/* 픽셀 로더 박스 */}
+        <div className='mx-auto mb-6 flex items-center justify-center'>
+          <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+        </div>
+
+        <p className='pixel-text text-sm text-[#5d4037]'>레시피를 불러오는 중...</p>
       </div>
     </div>
   ) : !recipe ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
-      <div className='text-center'>
-        <h2 className='mb-2 text-2xl font-bold'>레시피를 찾을 수 없습니다</h2>
-        <p className='text-muted-foreground mb-6'>요청하신 레시피가 존재하지 않습니다.</p>
-        <Button onClick={() => router.push('/recipes')}>레시피 목록으로 돌아가기</Button>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
+      <div className='max-w-md text-center'>
+        {/* 에러 아이콘 박스 */}
+        <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+          <ChefHat className='h-12 w-12 text-[#5d4037]/50' />
+        </div>
+        <h2 className='pixel-text mb-3 text-sm text-[#5d4037]'>레시피를 찾을 수 없습니다</h2>
+        <p className='mb-6 text-sm text-[#5d4037]/60'>요청하신 레시피가 존재하지 않습니다.</p>
+        <button
+          onClick={() => router.push('/recipes')}
+          className='pixel-button inline-flex items-center gap-2 border-4 border-[#5d4037] bg-[#ff5252] px-8 py-4 text-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'
+        >
+          <span className='pixel-text text-xs'>레시피 목록으로 돌아가기</span>
+        </button>
       </div>
     </div>
   ) : (
-    <main className='bg-background min-h-screen'>
-      <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8'>
-        <Button variant='ghost' className='mb-4 sm:mb-6' size='sm' onClick={() => router.back()}>
-          <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-          레시피 목록으로
-        </Button>
-
-        <div className='grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-5'>
-          <div className='space-y-4 sm:space-y-6 md:col-span-3'>
-            <div>
-              <div className='relative mb-3 h-56 overflow-hidden rounded-lg sm:mb-4 sm:h-72 md:h-96'>
-                <Image
-                  src={recipe.image || '/placeholder.svg'}
-                  alt={recipe.title}
-                  fill
-                  className='object-cover'
-                />
-              </div>
-
-              <div className='mb-2 flex flex-wrap items-center gap-2 sm:mb-3'>
-                <Badge className={difficultyColor[recipe.difficulty] + ' text-xs'}>
-                  {recipe.difficulty}
-                </Badge>
-                {recipe.tags.map((tag) => (
-                  <Badge key={tag} variant='secondary' className='text-xs'>
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className='mb-3 flex items-start justify-between gap-3 sm:mb-4'>
-                <div className='flex-1'>
-                  <h1 className='text-foreground mb-2 text-2xl font-bold text-balance sm:mb-3 sm:text-3xl md:text-4xl'>
-                    {recipe.title}
-                  </h1>
-                  <p className='text-muted-foreground text-base text-pretty sm:text-lg'>
-                    {recipe.description}
-                  </p>
-                </div>
-                <Button
-                  variant='outline'
-                  size='lg'
-                  className='shrink-0'
-                  onClick={handleLikeClick}
-                  disabled={isLiking}
-                >
-                  <Heart className={`mr-2 h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
-                  <span>{likesCount}</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className='grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4'>
-              <Card className='py-0'>
-                <CardContent className='p-3 text-center sm:p-4'>
-                  <Clock className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
-                  <div className='text-xl font-bold sm:text-2xl'>{totalTime}</div>
-                  <div className='text-muted-foreground text-xs'>분</div>
-                </CardContent>
-              </Card>
-              <Card className='py-0'>
-                <CardContent className='p-3 text-center sm:p-4'>
-                  <Users className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
-                  <div className='text-xl font-bold sm:text-2xl'>{recipe.servings}</div>
-                  <div className='text-muted-foreground text-xs'>인분</div>
-                </CardContent>
-              </Card>
-              <Card className='py-0'>
-                <CardContent className='p-3 text-center sm:p-4'>
-                  <ChefHat className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
-                  <div className='text-lg font-bold sm:text-xl'>{recipe.category}</div>
-                  <div className='text-muted-foreground text-xs'>카테고리</div>
-                </CardContent>
-              </Card>
-              <Card className='py-0'>
-                <CardContent className='p-3 text-center sm:p-4'>
-                  <Flame className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
-                  <div className='text-xl font-bold sm:text-2xl'>{recipe.nutrition.calories}</div>
-                  <div className='text-muted-foreground text-xs'>칼로리</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg sm:text-xl'>재료</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className='space-y-2 sm:space-y-3'>
-                  {recipe.ingredients.map((ingredient, index) => (
-                    <li key={index} className='flex items-start gap-2 sm:gap-3'>
-                      <div className='bg-primary/10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full sm:h-6 sm:w-6'>
-                        <span className='text-primary text-xs font-semibold'>{index + 1}</span>
-                      </div>
-                      <div className='flex-1 text-sm sm:text-base'>
-                        <span className='font-medium'>{ingredient.name}</span>
-                        <span className='text-muted-foreground text-xs sm:text-sm'>
-                          {' '}
-                          - {ingredient.amount}
-                          {ingredient.unit ? ` ${ingredient.unit}` : ''}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg sm:text-xl'>조리법</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ol className='space-y-3 sm:space-y-4'>
-                  {recipe.instructions.map((instruction, index) => (
-                    <li key={index} className='flex gap-3 sm:gap-4'>
-                      <div className='bg-primary text-primary-foreground flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold sm:h-8 sm:w-8 sm:text-base'>
-                        {index + 1}
-                      </div>
-                      <p className='flex-1 pt-1 text-sm text-pretty sm:text-base'>{instruction}</p>
-                    </li>
-                  ))}
-                </ol>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className='space-y-4 sm:space-y-6 md:col-span-2'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg sm:text-xl'>영양 정보</CardTitle>
-                <p className='text-muted-foreground text-xs sm:text-sm'>
-                  1인분 기준 (총 {recipe.servings}인분)
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-4'>
-                  <div>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>칼로리</span>
-                      <span className='font-bold'>{recipe.nutrition.calories} kcal</span>
-                    </div>
-                    <div className='bg-muted h-2 overflow-hidden rounded-full'>
-                      <div
-                        className='bg-primary h-full'
-                        style={{
-                          width: `${(recipe.nutrition.calories / 800) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>단백질</span>
-                      <span className='font-bold'>{recipe.nutrition.protein}g</span>
-                    </div>
-                    <div className='bg-muted h-2 overflow-hidden rounded-full'>
-                      <div
-                        className='bg-accent h-full'
-                        style={{
-                          width: `${(recipe.nutrition.protein / 50) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>탄수화물</span>
-                      <span className='font-bold'>{recipe.nutrition.carbs}g</span>
-                    </div>
-                    <div className='bg-muted h-2 overflow-hidden rounded-full'>
-                      <div
-                        className='bg-primary h-full'
-                        style={{
-                          width: `${(recipe.nutrition.carbs / 100) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>지방</span>
-                      <span className='font-bold'>{recipe.nutrition.fat}g</span>
-                    </div>
-                    <div className='bg-muted h-2 overflow-hidden rounded-full'>
-                      <div
-                        className='bg-accent h-full'
-                        style={{
-                          width: `${(recipe.nutrition.fat / 50) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <span className='text-sm font-medium'>식이섬유</span>
-                      <span className='font-bold'>{recipe.nutrition.fiber}g</span>
-                    </div>
-                    <div className='bg-muted h-2 overflow-hidden rounded-full'>
-                      <div
-                        className='bg-primary h-full'
-                        style={{
-                          width: `${(recipe.nutrition.fiber / 20) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg sm:text-xl'>조리 도구</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='flex flex-wrap gap-2'>
-                  {recipe.cookingTools.map((tool) => (
-                    <Badge key={tool} variant='outline' className='text-xs capitalize'>
-                      {tool}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-lg sm:text-xl'>조리 시간</CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-3'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground text-sm'>준비 시간</span>
-                  <span className='font-semibold'>{recipe.prepTime}분</span>
-                </div>
-                <Separator />
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground text-sm'>조리 시간</span>
-                  <span className='font-semibold'>{recipe.cookTime}분</span>
-                </div>
-                <Separator />
-                <div className='flex items-center justify-between'>
-                  <span className='text-sm font-semibold'>총 시간</span>
-                  <span className='text-primary font-bold'>{totalTime}분</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+    <div className='min-h-screen bg-[#fafafa]'>
+      {/* 헤더 */}
+      <div className='border-b-4 border-[#5d4037] bg-[#ffe0e0] p-6'>
+        <div className='mx-auto max-w-4xl'>
+          <button
+            onClick={() => router.back()}
+            className='flex items-center gap-2 border-2 border-[#5d4037] bg-white px-4 py-2 text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+          >
+            <ArrowLeft className='h-4 w-4' />
+            <span className='pixel-text text-xs'>뒤로</span>
+          </button>
         </div>
       </div>
+
+      {/* 메인 콘텐츠 */}
+      <main className='mx-auto max-w-4xl px-6 py-8'>
+        {/* 메인 이미지 카드 */}
+        <div className='mb-8 border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+          {/* 이미지 */}
+          <div className='relative h-96 border-b-4 border-[#5d4037]'>
+            <Image
+              src={recipe.image || '/placeholder.svg'}
+              alt={recipe.title}
+              fill
+              className='object-cover'
+              style={{ imageRendering: 'pixelated' }}
+            />
+            {/* 카테고리 배지 */}
+            <div className='absolute top-4 right-4 border-2 border-[#5d4037] bg-[#ff5252] px-4 py-2 text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <span className='pixel-text text-xs'>{recipe.category}</span>
+            </div>
+          </div>
+
+          {/* 카드 콘텐츠 */}
+          <div className='p-6'>
+            {/* 제목 */}
+            <h1 className='pixel-text mb-4 text-sm text-[#5d4037]'>{recipe.title}</h1>
+
+            {/* 설명 */}
+            <p className='mb-6 text-sm text-[#5d4037]/70'>{recipe.description}</p>
+
+            {/* 통계 */}
+            <div className='mb-6 grid grid-cols-2 gap-4 md:grid-cols-4'>
+              <div className='flex items-center gap-2 text-[#5d4037]'>
+                <Clock className='h-5 w-5' />
+                <div>
+                  <p className='text-xs text-[#5d4037]/60'>시간</p>
+                  <p className='text-sm font-semibold'>{totalTime}분</p>
+                </div>
+              </div>
+              <div className='flex items-center gap-2 text-[#5d4037]'>
+                <Users className='h-5 w-5' />
+                <div>
+                  <p className='text-xs text-[#5d4037]/60'>인분</p>
+                  <p className='text-sm font-semibold'>{recipe.servings}인분</p>
+                </div>
+              </div>
+              <div className='flex items-center gap-2 text-[#5d4037]'>
+                <ChefHat className='h-5 w-5' />
+                <div>
+                  <p className='text-xs text-[#5d4037]/60'>난이도</p>
+                  <p className='text-sm font-semibold'>{difficultyLabels[recipe.difficulty]}</p>
+                </div>
+              </div>
+              <div className='flex items-center gap-2 text-[#5d4037]'>
+                <Flame className='h-5 w-5' />
+                <div>
+                  <p className='text-xs text-[#5d4037]/60'>칼로리</p>
+                  <p className='text-sm font-semibold'>{recipe.nutrition.calories} kcal</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 태그 */}
+            <div className='mb-6 flex flex-wrap gap-2'>
+              {recipe.tags.map((tag) => (
+                <div
+                  key={tag}
+                  className='border-2 border-[#5d4037] bg-[#ffe0e0] px-3 py-1 text-sm text-[#5d4037]'
+                >
+                  {tag}
+                </div>
+              ))}
+            </div>
+
+            {/* 좋아요 버튼 */}
+            <button
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              className='pixel-button flex items-center gap-2 border-2 border-[#5d4037] bg-[#ff5252] px-4 py-2 text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              <Heart className={`h-4 w-4 ${liked ? 'fill-white' : ''}`} />
+              <span className='pixel-text text-xs'>{likesCount}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 그리드 레이아웃 */}
+        <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+          {/* 재료 섹션 */}
+          <div className='self-start border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+            <h2 className='pixel-text mb-4 text-xs text-[#5d4037]'>재료</h2>
+            <ul className='space-y-2'>
+              {recipe.ingredients.map((ingredient, index) => (
+                <li
+                  key={index}
+                  className='flex justify-between border-b border-[#5d4037]/20 pb-2 text-sm text-[#5d4037]'
+                >
+                  <span>{ingredient.name}</span>
+                  <span className='text-[#5d4037]/60'>
+                    {ingredient.amount}
+                    {ingredient.unit ? ` ${ingredient.unit}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 조리법 섹션 */}
+          <div className='md:col-span-2'>
+            <div className='mb-6 border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <h2 className='pixel-text mb-4 text-xs text-[#5d4037]'>조리법</h2>
+              <ol className='space-y-4'>
+                {recipe.instructions.map((instruction, index) => (
+                  <li key={index} className='flex gap-4'>
+                    <span className='flex h-8 w-8 flex-shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] text-white'>
+                      <span className='pixel-text text-xs'>{index + 1}</span>
+                    </span>
+                    <p className='flex-1 pt-1 text-sm text-[#5d4037]'>{instruction}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* 영양정보 */}
+            <div className='mb-6 border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <h2 className='pixel-text mb-2 text-xs text-[#5d4037]'>영양 정보</h2>
+              <p className='mb-4 text-xs text-[#5d4037]/60'>
+                1인분 기준 (총 {recipe.servings}인분)
+              </p>
+              <div className='space-y-3'>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]'>칼로리</span>
+                  <span className='text-sm font-bold text-[#5d4037]'>
+                    {recipe.nutrition.calories} kcal
+                  </span>
+                </div>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]'>단백질</span>
+                  <span className='text-sm font-bold text-[#5d4037]'>
+                    {recipe.nutrition.protein}g
+                  </span>
+                </div>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]'>탄수화물</span>
+                  <span className='text-sm font-bold text-[#5d4037]'>
+                    {recipe.nutrition.carbs}g
+                  </span>
+                </div>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]'>지방</span>
+                  <span className='text-sm font-bold text-[#5d4037]'>{recipe.nutrition.fat}g</span>
+                </div>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]'>식이섬유</span>
+                  <span className='text-sm font-bold text-[#5d4037]'>
+                    {recipe.nutrition.fiber}g
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 조리 도구 */}
+            <div className='mb-6 border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <h2 className='pixel-text mb-4 text-xs text-[#5d4037]'>조리 도구</h2>
+              <div className='flex flex-wrap gap-2'>
+                {recipe.cookingTools.map((tool) => (
+                  <div
+                    key={tool}
+                    className='border-2 border-[#5d4037] bg-white px-3 py-1 text-sm text-[#5d4037] capitalize'
+                  >
+                    {tool}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 조리 시간 */}
+            <div className='border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <h2 className='pixel-text mb-4 text-xs text-[#5d4037]'>조리 시간</h2>
+              <div className='space-y-3'>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]/60'>준비 시간</span>
+                  <span className='text-sm font-semibold text-[#5d4037]'>{recipe.prepTime}분</span>
+                </div>
+                <div className='flex items-center justify-between border-b border-[#5d4037]/20 pb-2'>
+                  <span className='text-sm text-[#5d4037]/60'>조리 시간</span>
+                  <span className='text-sm font-semibold text-[#5d4037]'>{recipe.cookTime}분</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-semibold text-[#5d4037]'>총 시간</span>
+                  <span className='text-sm font-bold text-[#ff5252]'>{totalTime}분</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* 로그인 다이얼로그 */}
       <LoginDialogComponent />
-    </main>
+    </div>
   );
 }

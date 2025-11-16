@@ -1,11 +1,12 @@
 'use client';
 
-import { Sparkles } from 'lucide-react';
+import { ChefHat } from 'lucide-react';
 
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { Spinner } from '@/components/ui/spinner';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
@@ -67,84 +68,74 @@ export default function LoginPage() {
   // 로그인 체크 중
   if (isCheckingAuth) {
     return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
-        <Spinner className='h-8 w-8' />
+      <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
+        <div className='text-center'>
+          <div className='mx-auto mb-6 flex items-center justify-center'>
+            <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+          </div>
+          <p className='pixel-text text-sm text-[#5d4037]'>로그인 확인 중...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className='bg-background flex min-h-screen flex-col items-center justify-center px-4'>
+    <main className='flex min-h-screen flex-col items-center justify-center bg-[#fafafa] px-4'>
       <div className='w-full max-w-md space-y-8'>
         {/* 로고 및 타이틀 */}
         <div className='text-center'>
-          <div className='mb-4 flex justify-center'>
-            <div className='bg-primary relative rounded-2xl p-4'>
-              <Sparkles className='text-primary-foreground h-12 w-12' />
-              <div className='bg-primary absolute inset-0 rounded-2xl opacity-50 blur-xl' />
+          <div className='mb-6 flex justify-center'>
+            <div className='flex h-20 w-20 items-center justify-center border-4 border-[#5d4037] bg-[#ff5252] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-10 w-10 text-white' />
             </div>
           </div>
-          <h1 className='mb-2 text-4xl font-bold'>CookPT</h1>
-          <p className='text-muted-foreground text-lg'>
-            AI 냉장고 재료 기반 한식 레시피 추천
-          </p>
+          <h1 className='pixel-text mb-3 text-base text-[#5d4037]'>CookPT</h1>
+          <p className='text-sm text-[#5d4037]/70'>AI 냉장고 재료 기반 한식 레시피 추천</p>
         </div>
 
         {/* 로그인 섹션 */}
-        <div className='border-border bg-card rounded-2xl border p-8 shadow-lg'>
-          <h2 className='mb-2 text-center text-2xl font-semibold'>로그인</h2>
-          <p className='text-muted-foreground mb-6 text-center text-sm'>
+        <div className='border-4 border-[#5d4037] bg-white p-8 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+          <h2 className='pixel-text mb-3 text-center text-xs text-[#5d4037]'>로그인</h2>
+          <p className='mb-6 text-center text-sm text-[#5d4037]/70'>
             소셜 계정으로 간편하게 로그인하세요
           </p>
 
           <div className='flex flex-col items-center gap-4'>
-            {/* Google Sign In Button */}
+            {/* Google Login Button */}
             <button
               onClick={() => handleSocialLogin('google')}
               disabled={isLoading.google || isLoading.kakao}
-              className='group relative flex h-12 w-full max-w-[280px] cursor-pointer items-center justify-center overflow-hidden rounded bg-white px-3 text-center text-sm font-medium text-[#1f1f1f] transition-all duration-200 hover:shadow-[0_1px_2px_0_rgba(60,64,67,.30),0_1px_3px_1px_rgba(60,64,67,.15)] disabled:cursor-default disabled:border-[#1f1f1f1f] disabled:bg-[#ffffff61]'
-              style={{ letterSpacing: '0.25px', fontFamily: 'Roboto, arial, sans-serif' }}
+              className='flex w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#5d4037] bg-white px-6 py-3 text-[#5d4037] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50'
             >
-              {/* Hover/Focus State Overlay */}
-              <span className='absolute inset-0 bg-[#303030] opacity-0 transition-opacity duration-200 group-hover:opacity-[0.08] group-focus:opacity-[0.12] group-active:opacity-[0.12]' />
-
               {isLoading.google ? (
-                <span className='z-10 flex items-center justify-center'>
-                  <Spinner className='size-5 text-gray-600' />
-                </span>
+                <span className='text-sm font-semibold'>로딩 중...</span>
               ) : (
                 <>
-                  {/* Google Icon */}
-                  <div className='absolute left-4 z-10 flex h-5 w-5 shrink-0 items-center justify-center group-disabled:opacity-[0.38]'>
-                    <svg
-                      version='1.1'
-                      xmlns='http://www.w3.org/2000/svg'
-                      viewBox='0 0 48 48'
-                      className='block h-5 w-5'
-                    >
-                      <path
-                        fill='#EA4335'
-                        d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'
-                      />
-                      <path
-                        fill='#4285F4'
-                        d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'
-                      />
-                      <path
-                        fill='#FBBC05'
-                        d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'
-                      />
-                      <path
-                        fill='#34A853'
-                        d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z'
-                      />
-                      <path fill='none' d='M0 0h48v48H0z' />
-                    </svg>
-                  </div>
-                  {/* Button Text */}
-                  <span className='z-10 overflow-hidden pl-2 text-base font-semibold text-ellipsis whitespace-nowrap group-disabled:opacity-[0.38]'>
-                    구글 로그인
-                  </span>
+                  <svg
+                    version='1.1'
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 48 48'
+                    className='h-6 w-6'
+                  >
+                    <path
+                      fill='#EA4335'
+                      d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'
+                    />
+                    <path
+                      fill='#4285F4'
+                      d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'
+                    />
+                    <path
+                      fill='#FBBC05'
+                      d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'
+                    />
+                    <path
+                      fill='#34A853'
+                      d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z'
+                    />
+                    <path fill='none' d='M0 0h48v48H0z' />
+                  </svg>
+                  <span className='text-sm font-semibold'>구글 로그인</span>
                 </>
               )}
             </button>
@@ -153,31 +144,20 @@ export default function LoginPage() {
             <button
               onClick={() => handleSocialLogin('kakao')}
               disabled={isLoading.google || isLoading.kakao}
-              className='relative flex h-12 w-full max-w-[280px] cursor-pointer items-center justify-center overflow-hidden rounded bg-[#FEE500] disabled:cursor-default disabled:opacity-60'
+              className='flex w-full cursor-pointer items-center justify-center gap-3 border-4 border-[#5d4037] bg-[#FEE500] px-6 py-3 text-[#5d4037] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50'
             >
               {isLoading.kakao ? (
-                <Spinner className='size-5 text-gray-600' />
+                <span className='text-sm font-semibold'>로딩 중...</span>
               ) : (
                 <>
-                  {/* Kakao Icon */}
-                  <div className='absolute left-4 flex h-5 w-5 shrink-0 items-center justify-center'>
-                    <svg
-                      width='20'
-                      height='20'
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        fillRule='evenodd'
-                        clipRule='evenodd'
-                        d='M12 3C6.477 3 2 6.463 2 10.692c0 2.62 1.632 4.932 4.13 6.325l-.987 3.7c-.084.315.271.561.544.377l4.35-2.928c.66.095 1.337.145 2.023.145 5.523 0 10-3.463 10-7.62S17.523 3 12 3z'
-                        fill='#000000'
-                      />
-                    </svg>
-                  </div>
-                  {/* Button Text */}
-                  <span className='pl-2 text-base font-semibold text-[#000000]'>카카오 로그인</span>
+                  <Image
+                    src='/카카오 로고.svg'
+                    alt='Kakao'
+                    width={24}
+                    height={24}
+                    className='h-6 w-6'
+                  />
+                  <span className='text-sm font-semibold'>카카오 로그인</span>
                 </>
               )}
             </button>
@@ -185,13 +165,13 @@ export default function LoginPage() {
         </div>
 
         {/* 안내 문구 */}
-        <p className='text-muted-foreground text-center text-xs'>
+        <p className='text-center text-xs text-[#5d4037]/60'>
           로그인하시면{' '}
-          <a href='/terms' className='underline'>
+          <a href='/terms' className='text-[#5d4037] underline'>
             이용약관
           </a>
           과{' '}
-          <a href='/privacy' className='underline'>
+          <a href='/privacy' className='text-[#5d4037] underline'>
             개인정보처리방침
           </a>
           에 동의하는 것으로 간주됩니다.

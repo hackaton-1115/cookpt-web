@@ -1,15 +1,14 @@
 'use client';
 
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-import { ArrowRight, ChefHat, Heart, Loader2, User } from 'lucide-react';
+import { ArrowRight, ChefHat, Heart, User } from 'lucide-react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { LoginRequired } from '@/components/LoginRequired';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { useLogin } from '@/hooks/useLogin';
 import { getLikedRecipeIds } from '@/lib/recipe-likes';
 import { createClient } from '@/lib/supabase/client';
@@ -76,10 +75,13 @@ export default function MyPage() {
 
   if (loading) {
     return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
+      <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
         <div className='text-center'>
-          <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-          <h2 className='mb-2 text-xl font-semibold'>마이페이지를 불러오는 중...</h2>
+          {/* 픽셀 로더 */}
+          <div className='mx-auto mb-6 flex items-center justify-center'>
+            <PixelIconBox icon={User} variant='primary' size='large' className='pixel-rotate' />
+          </div>
+          <p className='pixel-text text-sm text-[#5d4037]'>마이페이지를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -87,14 +89,17 @@ export default function MyPage() {
 
   if (needsLogin) {
     return (
-      <main className='bg-background min-h-screen py-8'>
-        <div className='container mx-auto px-4'>
-          <div className='mb-8'>
-            <div className='mb-2 flex items-center gap-2'>
-              <User className='h-8 w-8' />
-              <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+      <main className='min-h-screen bg-[#fafafa] py-8'>
+        <div className='container mx-auto max-w-4xl px-4 sm:px-6'>
+          {/* 페이지 헤더 */}
+          <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+            <div className='mb-3 flex items-center gap-3'>
+              <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                <User className='h-6 w-6 text-white' />
+              </div>
+              <h1 className='pixel-text text-base text-[#5d4037]'>마이페이지</h1>
             </div>
-            <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+            <p className='text-sm text-[#5d4037]/70'>내 정보와 활동을 확인하세요</p>
           </div>
           <LoginRequired
             icon={User}
@@ -108,69 +113,74 @@ export default function MyPage() {
   }
 
   return (
-    <main className='bg-background min-h-screen py-8'>
-      <div className='container mx-auto px-4'>
+    <main className='min-h-screen bg-[#fafafa] py-8'>
+      <div className='container mx-auto max-w-4xl px-4 sm:px-6'>
         {/* 페이지 헤더 */}
-        <div className='mb-8'>
-          <div className='mb-2 flex items-center gap-2'>
-            <User className='h-8 w-8' />
-            <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+        <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+          <div className='mb-3 flex items-center gap-3'>
+            <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <User className='h-6 w-6 text-white' />
+            </div>
+            <h1 className='pixel-text text-base text-[#5d4037]'>마이페이지</h1>
           </div>
-          <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+          <p className='text-sm text-[#5d4037]/70'>내 정보와 활동을 확인하세요</p>
         </div>
 
         {/* 사용자 정보 카드 */}
-        <Card className='mb-8'>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between gap-3'>
-              <div className='flex items-center gap-3'>
-                <div className='bg-primary/10 rounded-full p-3'>
-                  <User className='text-primary h-8 w-8' />
-                </div>
-                <div>
-                  <h1 className='text-2xl font-bold'>
-                    {user?.user_metadata?.full_name || '사용자'}님
-                  </h1>
-                  <p className='text-muted-foreground text-sm'>{user?.email}</p>
-                </div>
+        <div className='mb-8 border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+          <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center'>
+            <div className='flex items-center gap-4'>
+              <div className='flex h-16 w-16 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                <User className='h-8 w-8 text-[#5d4037]' />
               </div>
-              <Button variant='outline' onClick={handleLogout} className='text-red-600'>
-                로그아웃
-              </Button>
-            </CardTitle>
-          </CardHeader>
-        </Card>
+              <div>
+                <h1 className='pixel-text mb-2 text-xs text-[#5d4037]'>
+                  {user?.user_metadata?.full_name || '사용자'}님
+                </h1>
+                <p className='text-sm text-[#5d4037]/70'>{user?.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className='w-full cursor-pointer border-2 border-[#5d4037] bg-white px-6 py-3 text-sm font-semibold text-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none sm:w-auto'
+            >
+              로그아웃
+            </button>
+          </div>
+        </div>
 
         {/* 빠른 메뉴 */}
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
+          {/* 내 레시피 카드 */}
           <Link href='/my-recipes'>
-            <Card className='hover:border-primary cursor-pointer transition-colors'>
-              <CardContent className='flex items-center gap-4 p-6'>
-                <div className='bg-primary/10 rounded-full p-3'>
-                  <ChefHat className='text-primary h-8 w-8' />
+            <div className='cursor-pointer border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'>
+              <div className='flex items-center gap-4'>
+                <div className='flex h-14 w-14 shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ffe0e0] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                  <ChefHat className='h-7 w-7 text-[#5d4037]' />
                 </div>
                 <div className='flex-1'>
-                  <h3 className='mb-1 text-lg font-semibold'>내 레시피</h3>
-                  <p className='text-muted-foreground text-sm'>{myRecipesCount}개의 레시피</p>
+                  <h3 className='mb-2 text-base font-bold text-[#5d4037]'>내 레시피</h3>
+                  <p className='text-sm text-[#5d4037]/70'>{myRecipesCount}개의 레시피</p>
                 </div>
-                <ArrowRight className='text-muted-foreground h-5 w-5' />
-              </CardContent>
-            </Card>
+                <ArrowRight className='h-5 w-5 shrink-0 text-[#5d4037]' />
+              </div>
+            </div>
           </Link>
 
+          {/* 좋아요한 레시피 카드 */}
           <Link href='/favorites'>
-            <Card className='hover:border-primary cursor-pointer transition-colors'>
-              <CardContent className='flex items-center gap-4 p-6'>
-                <div className='bg-red-500/10 rounded-full p-3'>
-                  <Heart className='h-8 w-8 fill-red-500 text-red-500' />
+            <div className='cursor-pointer border-4 border-[#5d4037] bg-white p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'>
+              <div className='flex items-center gap-4'>
+                <div className='flex h-14 w-14 shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ffe0e0] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                  <Heart className='h-7 w-7 fill-[#ff5252] text-[#ff5252]' />
                 </div>
                 <div className='flex-1'>
-                  <h3 className='mb-1 text-lg font-semibold'>좋아요한 레시피</h3>
-                  <p className='text-muted-foreground text-sm'>{likedCount}개의 레시피</p>
+                  <h3 className='mb-2 text-base font-bold text-[#5d4037]'>좋아요한 레시피</h3>
+                  <p className='text-sm text-[#5d4037]/70'>{likedCount}개의 레시피</p>
                 </div>
-                <ArrowRight className='text-muted-foreground h-5 w-5' />
-              </CardContent>
-            </Card>
+                <ArrowRight className='h-5 w-5 shrink-0 text-[#5d4037]' />
+              </div>
+            </div>
           </Link>
         </div>
       </div>

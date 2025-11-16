@@ -1,79 +1,47 @@
-'use client'
+'use client';
 
-import { Camera, Sparkles } from 'lucide-react'
+import { ArrowRight, ChefHat, Sparkles } from 'lucide-react';
 
-import Image from 'next/image'
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/components/ui/button'
+import { PixelButton } from '@/components/ui/pixel-button';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 
-interface HeroProps {
-  onLearnMore?: () => void
-}
-
-export function Hero({ onLearnMore }: HeroProps) {
+export function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pb-12 pt-24 sm:pb-20 sm:pt-32">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-background to-background" />
+    <section className='relative overflow-hidden px-6 py-20'>
+      {/* Pixel Decorations */}
+      <div className='pixel-rotate fixed top-20 left-10 h-8 w-8 bg-[#5d4037] opacity-20' />
+      <div className='pixel-rotate fixed top-40 right-20 h-6 w-6 bg-[#ff5252] opacity-20' />
+      <div className='pixel-rotate fixed bottom-40 left-1/4 h-10 w-10 bg-[#5d4037] opacity-10' />
 
-      <div className="container relative z-10 mx-auto">
-        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div className="space-y-6 sm:space-y-8">
-            <div className="border-primary/20 bg-primary/10 inline-flex items-center gap-2 rounded-full border px-4 py-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm text-primary">AI 기반 레시피 추천</span>
-            </div>
-
-            <h1 className="text-4xl leading-tight sm:text-5xl lg:text-6xl">
-              사진 한 장으로
-              <br />
-              <span className="text-primary">맞춤 레시피</span>를
-              <br />
-              바로 만나보세요
-            </h1>
-
-            <p className="text-muted-foreground max-w-lg text-lg sm:text-xl">
-              냉장고 속 재료를 찍으면 AI가 즉시 분석해서 당신만을 위한 레시피를 추천해드립니다.
-            </p>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link href="/upload">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 px-6 py-5 text-base sm:px-8 sm:py-6 sm:text-lg"
-                >
-                  <Camera className="mr-2 h-5 w-5" />
-                  지금 시작하기
-                </Button>
-              </Link>
-              {onLearnMore && (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary/30 hover:bg-primary/5 px-6 py-5 text-base sm:px-8 sm:py-6 sm:text-lg"
-                  onClick={onLearnMore}
-                >
-                  더 알아보기
-                </Button>
-              )}
-            </div>
+      <div className='mx-auto max-w-6xl'>
+        <div className='mb-12 text-center'>
+          <div className='mb-6 inline-block'>
+            <PixelIconBox icon={ChefHat} size='large' variant='primary' className='mx-auto mb-4' />
           </div>
 
-          <div className="relative mt-8 lg:mt-0">
-            <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
-            <div className="border-primary/20 shadow-primary/10 relative overflow-hidden rounded-2xl border shadow-2xl">
-              <Image
-                src="/slide1.png"
-                alt="Cooking ingredients"
-                width={1080}
-                height={720}
-                className="h-auto w-full"
-              />
-            </div>
-          </div>
+          <h1 className='pixel-text mb-6 text-2xl text-[#5d4037] md:text-3xl'>CookPT</h1>
+
+          <p className='mx-auto mb-4 max-w-3xl text-xl text-[#5d4037] md:text-2xl'>
+            사진 한 장으로
+            <br />
+            <span className='text-[#ff5252]'>AI가 만드는 맞춤 레시피</span>
+          </p>
+
+          <p className='mx-auto mb-8 max-w-2xl text-lg text-[#5d4037]/70'>
+            냉장고 속 재료를 찍으면 AI가 즉시 분석해서 당신만을 위한 레시피를 추천해드립니다.
+          </p>
+
+          <Link href='/upload'>
+            <PixelButton size='large' className='inline-flex items-center gap-3 whitespace-nowrap'>
+              <Sparkles className='h-6 w-6' />
+              <span>지금 시작하기</span>
+              <ArrowRight className='h-6 w-6' />
+            </PixelButton>
+          </Link>
         </div>
       </div>
     </section>
-  )
+  );
 }
