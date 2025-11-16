@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
 import { Button } from '@/components/ui/button';
+import { useLogin } from '@/hooks/useLogin';
 import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
 import { findRecipesByUserId } from '@/lib/recipe-storage';
 import { createClient } from '@/lib/supabase/client';
@@ -16,8 +17,10 @@ export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
+  const [needsLogin, setNeedsLogin] = useState<boolean>(false);
 
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const loadMyRecipes = async () => {
@@ -27,8 +30,10 @@ export default function MyRecipesPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-        router.push('/login');
+        // 로그인하지 않은 경우 로그인 요청
+        setNeedsLogin(true);
+        setLoading(false);
+        requestLogin();
         return;
       }
 
@@ -51,16 +56,34 @@ export default function MyRecipesPage() {
     };
 
     loadMyRecipes();
-  }, [router]);
+  }, [router, requestLogin]);
 
-  return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
-      <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>내 레시피를 불러오는 중...</h2>
+  if (loading) {
+    return (
+      <div className='bg-background flex min-h-screen items-center justify-center'>
+        <div className='text-center'>
+          <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
+          <h2 className='mb-2 text-xl font-semibold'>내 레시피를 불러오는 중...</h2>
+        </div>
       </div>
-    </div>
-  ) : (
+    );
+  }
+
+  if (needsLogin) {
+    return (
+      <div className='bg-background flex min-h-screen items-center justify-center'>
+        <div className='text-center'>
+          <ChefHat className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
+          <h2 className='mb-2 text-xl font-semibold'>로그인이 필요합니다</h2>
+          <p className='text-muted-foreground mb-4'>내 레시피를 보려면 로그인해주세요</p>
+          <Button onClick={requestLogin}>로그인하기</Button>
+        </div>
+        <LoginDialogComponent />
+      </div>
+    );
+  }
+
+  return (
     <main className='bg-background min-h-screen py-8'>
       <div className='container mx-auto px-4'>
         <div className='mb-8'>

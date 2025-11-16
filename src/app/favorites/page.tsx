@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
 import { Button } from '@/components/ui/button';
+import { useLogin } from '@/hooks/useLogin';
 import { getLikedRecipeIds } from '@/lib/recipe-likes';
 import { findRecipesByIds } from '@/lib/recipe-storage';
 import { createClient } from '@/lib/supabase/client';
@@ -18,6 +19,7 @@ export default function FavoritesPage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const checkAuthAndLoadFavorites = async () => {
@@ -78,7 +80,7 @@ export default function FavoritesPage() {
                 : '로그인하고 좋아하는 레시피를 저장해보세요!'}
             </p>
             {!isLoggedIn ? (
-              <Button onClick={() => router.push('/login')}>로그인하기</Button>
+              <Button onClick={requestLogin}>로그인하기</Button>
             ) : (
               <Button onClick={() => router.push('/recipes')}>레시피 찾아보기</Button>
             )}
@@ -90,6 +92,7 @@ export default function FavoritesPage() {
             ))}
           </div>
         )}
+        <LoginDialogComponent />
       </div>
     </main>
   );

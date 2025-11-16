@@ -30,4 +30,6 @@ interface Window {
   supabase?: any;
   // 네이티브 앱으로 인증 성공 토큰을 전송하는 함수
   sendAuthSuccessToNative?: (accessToken: string, refreshToken: string) => void;
+  // 네이티브 앱의 로그인 화면을 여는 함수
+  openNativeLogin?: () => void;
 }

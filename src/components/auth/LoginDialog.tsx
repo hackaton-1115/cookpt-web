@@ -19,9 +19,16 @@ import { Spinner } from '../ui/spinner';
 interface LoginDialogProps {
   children?: React.ReactNode;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export default function LoginDialog({ children, trigger }: LoginDialogProps) {
+export default function LoginDialog({
+  children,
+  trigger,
+  open,
+  onOpenChange,
+}: LoginDialogProps) {
   const [isLoading, setIsLoading] = useState<{ google: boolean; kakao: boolean }>({
     google: false,
     kakao: false,
@@ -53,8 +60,13 @@ export default function LoginDialog({ children, trigger }: LoginDialogProps) {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{trigger || <Button variant='outline'>로그인</Button>}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+      {!trigger && !open && (
+        <DialogTrigger asChild>
+          <Button variant='outline'>로그인</Button>
+        </DialogTrigger>
+      )}
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle className='text-center text-2xl'>로그인</DialogTitle>

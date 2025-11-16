@@ -11,8 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { useLogin } from '@/hooks/useLogin';
 import { checkRecipeLiked, toggleRecipeLike } from '@/lib/recipe-likes';
 import { findRecipeById } from '@/lib/recipe-storage';
+import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
 
 const difficultyColor = {
@@ -27,14 +29,23 @@ export default function RecipeDetailPage() {
   const [liked, setLiked] = useState<boolean>(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiking, setIsLiking] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const params = useParams();
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const loadRecipe = async () => {
       // URL 디코딩 (한글 ID 처리)
       const id = decodeURIComponent(params.id as string);
+
+      // 로그인 상태 확인
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
 
       // Supabase에서 AI 생성 레시피 찾기
       const aiRecipe = await findRecipeById(id);
@@ -55,6 +66,12 @@ export default function RecipeDetailPage() {
 
   const handleLikeClick = async () => {
     if (!recipe || isLiking) return;
+
+    // 로그인하지 않은 경우 로그인 요청
+    if (!isLoggedIn) {
+      requestLogin();
+      return;
+    }
 
     setIsLiking(true);
     try {
@@ -346,6 +363,7 @@ export default function RecipeDetailPage() {
           </div>
         </div>
       </div>
+      <LoginDialogComponent />
     </main>
   );
 }
