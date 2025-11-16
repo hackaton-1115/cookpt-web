@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko'>
-      <body className={`${pressStart2P.variable} font-sans antialiased`}>
+      <body className={`${pressStart2P.variable} bg-[#fafafa] font-sans antialiased`}>
         <NativeAuthProvider>{children}</NativeAuthProvider>
         <Analytics />
       </body>
