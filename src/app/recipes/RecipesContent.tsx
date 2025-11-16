@@ -10,8 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { generateRecipes } from '@/lib/edge-functions';
 import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
-import { loadGeneratedRecipes } from '@/lib/recipe-storage';
-import { Recipe } from '@/lib/types';
+import { GenerateRecipesRequest, Recipe } from '@/lib/types';
 
 export default function RecipesContent() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -21,10 +20,15 @@ export default function RecipesContent() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const ingredientsParam = searchParams.get('ingredients');
 
   useEffect(() => {
     const loadRecipes = async () => {
+      const ingredientsParam = searchParams.get('ingredients');
+      const themeParam = searchParams.get('theme');
+      const cuisineParam = searchParams.get('cuisine');
+      const toolsParam = searchParams.get('tools');
+      const generationIdParam = searchParams.get('generationId');
+
       // 재료가 없으면 홈으로 리다이렉트
       if (!ingredientsParam) {
         router.push('/');
@@ -33,50 +37,69 @@ export default function RecipesContent() {
 
       const ingredients = ingredientsParam.split(',').map((i) => i.trim());
 
-      // 기존에 생성된 레시피가 있는지 확인
-      const existingRecipes = await loadGeneratedRecipes();
-      if (existingRecipes.length > 0) {
-        // 이미 생성된 레시피가 있으면 재사용
-        setRecipes(existingRecipes);
+      // 캐시 키 생성 (조건 + generationId 조합)
+      const cacheKey = `recipes_${ingredientsParam}_${themeParam || ''}_${cuisineParam || ''}_${toolsParam || ''}_${generationIdParam || ''}`;
 
-        // 좋아요 상태 확인
-        const recipeIds = existingRecipes.map((r) => r.id);
-        const liked = await checkMultipleRecipesLiked(recipeIds);
-        setLikedRecipes(liked);
-
-        setLoading(false);
-        return;
-      }
-
-      // AI 레시피 생성 (Edge Function에서 DB 저장까지 처리)
       try {
-        const generatedRecipes = await generateRecipes(ingredients);
+        setLoading(true);
+        setError(null);
+
+        // 1. SessionStorage에서 캐시 확인
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          console.log('캐시된 레시피 사용:', cacheKey);
+          const cachedRecipes: Recipe[] = JSON.parse(cached);
+          setRecipes(cachedRecipes);
+
+          // 좋아요 상태 확인
+          const recipeIds = cachedRecipes.map((r) => r.id);
+          const liked = await checkMultipleRecipesLiked(recipeIds);
+          setLikedRecipes(liked);
+          setLoading(false);
+          return;
+        }
+
+        // 2. 캐시가 없으면 AI 레시피 생성
+        console.log('새로운 레시피 생성:', cacheKey);
+
+        // 요청 객체 구성
+        const request: GenerateRecipesRequest = {
+          ingredients,
+          theme: themeParam || undefined,
+          cuisine: cuisineParam || undefined,
+          tools: toolsParam ? toolsParam.split(',') : undefined,
+        };
+
+        const generatedRecipes = await generateRecipes(request);
         setRecipes(generatedRecipes);
+
+        // 3. SessionStorage에 캐시 저장
+        sessionStorage.setItem(cacheKey, JSON.stringify(generatedRecipes));
 
         // 좋아요 상태 확인
         const recipeIds = generatedRecipes.map((r) => r.id);
         const liked = await checkMultipleRecipesLiked(recipeIds);
         setLikedRecipes(liked);
-
-        setLoading(false);
       } catch (err) {
         console.error('레시피 생성 실패:', err);
         setError(err instanceof Error ? err.message : '레시피 생성 중 오류가 발생했습니다.');
+      } finally {
         setLoading(false);
       }
     };
 
     loadRecipes();
-  }, [ingredientsParam, router]);
+  }, [searchParams, router]);
 
+  const ingredientsParam = searchParams.get('ingredients');
   const ingredients = ingredientsParam ? ingredientsParam.split(',').map((i) => i.trim()) : [];
 
   return loading ? (
     <div className='bg-background flex min-h-screen items-center justify-center'>
       <div className='text-center'>
         <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>AI가 맞춤 레시피를 생성하고 있습니다</h2>
-        <p className='text-muted-foreground'>약 15초 소요됩니다...</p>
+        <h2 className='mb-2 text-xl font-semibold'>레시피 생성 중...</h2>
+        <p className='text-muted-foreground'>AI가 맞춤 레시피를 만들고 있습니다 (약 30초 소요)</p>
       </div>
     </div>
   ) : (
@@ -103,11 +126,11 @@ export default function RecipesContent() {
             <AlertDescription className='mt-2 flex flex-col gap-3'>
               <p>{error}</p>
               <div className='flex gap-2'>
+                <Button variant='outline' size='sm' onClick={() => router.push('/recognize')}>
+                  조건 다시 설정
+                </Button>
                 <Button variant='outline' size='sm' onClick={() => window.location.reload()}>
                   다시 시도
-                </Button>
-                <Button variant='outline' size='sm' onClick={() => router.push('/recognize')}>
-                  재료 선택으로 돌아가기
                 </Button>
               </div>
             </AlertDescription>
