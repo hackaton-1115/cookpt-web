@@ -13,11 +13,20 @@ export const GET = async (request: Request) => {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // 로그인 성공 시 지정된 페이지로 리다이렉트
-      return NextResponse.redirect(`${origin}${next}`);
+      // 로그인 성공 시 /auth/success로 리다이렉트 (네이티브 앱 지원)
+      // 클라이언트 사이드에서 네이티브 앱 여부 확인 후 토큰 전송
+      // callback=true 파라미터로 callback을 거쳤음을 표시
+      return NextResponse.redirect(
+        `${origin}/auth/success?next=${encodeURIComponent(next)}&callback=true`
+      );
+    } else {
+      // 에러 발생 시 에러 정보와 함께 리다이렉트
+      return NextResponse.redirect(
+        `${origin}/auth/success?error=${encodeURIComponent(error.message)}&callback=true`
+      );
     }
   }
 
-  // 에러 발생 시 홈으로 리다이렉트 (또는 에러 페이지)
-  return NextResponse.redirect(`${origin}/`);
+  // code가 없는 경우
+  return NextResponse.redirect(`${origin}/auth/success?error=no_code&callback=true`);
 };

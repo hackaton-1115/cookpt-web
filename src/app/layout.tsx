@@ -2,6 +2,9 @@ import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 
 import { Press_Start_2P } from 'next/font/google';
+
+import NativeAuthProvider from '@/components/NativeAuthProvider';
+
 import './globals.css';
 
 const pressStart2P = Press_Start_2P({
@@ -42,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang='ko'>
       <body className={`${pressStart2P.variable} font-sans antialiased`}>
-        {children}
+        <NativeAuthProvider>{children}</NativeAuthProvider>
         <Analytics />
       </body>
     </html>

@@ -4,9 +4,9 @@ import { ChefHat, Clock, Heart, Users } from 'lucide-react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { useLogin } from '@/hooks/useLogin';
 import { toggleRecipeLike } from '@/lib/recipe-likes';
 import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
@@ -24,12 +24,11 @@ const difficultyLabels = {
 };
 
 export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: RecipeCardProps) {
+  const { requestLogin, LoginDialogComponent } = useLogin();
   const [liked, setLiked] = useState<boolean>(initialLiked);
   const [likesCount, setLikesCount] = useState<number>(recipe.likesCount || 0);
   const [isLiking, setIsLiking] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  const router = useRouter();
 
   const totalTime = recipe.prepTime + recipe.cookTime;
 
@@ -64,9 +63,9 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
 
     if (isLiking) return;
 
-    // 로그인하지 않은 경우 로그인 페이지로 이동
+    // 로그인하지 않은 경우 로그인 요청
     if (!isLoggedIn) {
-      router.push('/login');
+      requestLogin();
       return;
     }
 
@@ -164,6 +163,7 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
           </div>
         </div>
       </div>
+      <LoginDialogComponent />
     </Link>
   );
 }

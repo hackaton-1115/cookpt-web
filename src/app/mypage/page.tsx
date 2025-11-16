@@ -7,17 +7,22 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoginRequired } from '@/components/LoginRequired';
 import { PixelIconBox } from '@/components/ui/pixel-icon-box';
+import { useLogin } from '@/hooks/useLogin';
 import { getLikedRecipeIds } from '@/lib/recipe-likes';
 import { createClient } from '@/lib/supabase/client';
+import { isNativeApp, sendLogoutToNative } from '@/lib/supabase/native-auth';
 
 export default function MyPage() {
   const [likedCount, setLikedCount] = useState<number>(0);
   const [myRecipesCount, setMyRecipesCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [needsLogin, setNeedsLogin] = useState<boolean>(false);
 
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const loadUserAndStats = async () => {
@@ -27,8 +32,9 @@ export default function MyPage() {
       } = await supabase.auth.getUser();
 
       if (!currentUser) {
-        // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-        router.push('/login');
+        // 로그인하지 않은 경우 로그인 필요 상태로 설정
+        setNeedsLogin(true);
+        setLoading(false);
         return;
       }
 
@@ -53,27 +59,59 @@ export default function MyPage() {
     };
 
     loadUserAndStats();
-  }, [router]);
+  }, [router, requestLogin]);
 
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+
+    // 네이티브 앱이면 저장된 토큰도 삭제하도록 알림
+    if (isNativeApp()) {
+      sendLogoutToNative();
+    }
+
     router.push('/');
   };
 
-  return loading ? (
-    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
-      <div className='text-center'>
-        {/* 픽셀 로더 */}
-        <div className='mx-auto mb-6 flex items-center justify-center'>
-          <PixelIconBox icon={User} variant='primary' size='large' className='pixel-rotate' />
+  if (loading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
+        <div className='text-center'>
+          {/* 픽셀 로더 */}
+          <div className='mx-auto mb-6 flex items-center justify-center'>
+            <PixelIconBox icon={User} variant='primary' size='large' className='pixel-rotate' />
+          </div>
+          <p className='pixel-text text-sm text-[#5d4037]'>마이페이지를 불러오는 중...</p>
         </div>
-        <p className='pixel-text text-sm text-[#5d4037]'>마이페이지를 불러오는 중...</p>
       </div>
-    </div>
-  ) : (
+    );
+  }
+
+  if (needsLogin) {
+    return (
+      <main className='bg-background min-h-screen py-8'>
+        <div className='container mx-auto px-4'>
+          <div className='mb-8'>
+            <div className='mb-2 flex items-center gap-2'>
+              <User className='h-8 w-8' />
+              <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+            </div>
+            <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+          </div>
+          <LoginRequired
+            icon={User}
+            message='마이페이지를 이용하려면 로그인해주세요'
+            onLoginClick={requestLogin}
+          />
+        </div>
+        <LoginDialogComponent />
+      </main>
+    );
+  }
+
+  return (
     <main className='min-h-screen bg-[#fafafa] py-8'>
-      <div className='container mx-auto max-w-4xl px-4'>
+      <div className='container mx-auto px-4'>
         {/* 페이지 헤더 */}
         <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
           <div className='mb-3 flex items-center gap-3'>

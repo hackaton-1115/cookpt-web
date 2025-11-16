@@ -5,8 +5,10 @@ import { ChefHat } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoginRequired } from '@/components/LoginRequired';
 import { RecipeCard } from '@/components/RecipeCard';
 import { PixelIconBox } from '@/components/ui/pixel-icon-box';
+import { useLogin } from '@/hooks/useLogin';
 import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
 import { findRecipesByUserId } from '@/lib/recipe-storage';
 import { createClient } from '@/lib/supabase/client';
@@ -16,8 +18,10 @@ export default function MyRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [likedRecipes, setLikedRecipes] = useState<Record<string, boolean>>({});
+  const [needsLogin, setNeedsLogin] = useState<boolean>(false);
 
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const loadMyRecipes = async () => {
@@ -27,8 +31,9 @@ export default function MyRecipesPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-        router.push('/login');
+        // 로그인하지 않은 경우 로그인 필요 상태로 설정
+        setNeedsLogin(true);
+        setLoading(false);
         return;
       }
 
@@ -51,19 +56,45 @@ export default function MyRecipesPage() {
     };
 
     loadMyRecipes();
-  }, [router]);
+  }, [router, requestLogin]);
 
-  return loading ? (
-    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
-      <div className='text-center'>
-        {/* 픽셀 로더 */}
-        <div className='mx-auto mb-6 flex items-center justify-center'>
-          <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+  if (loading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
+        <div className='text-center'>
+          {/* 픽셀 로더 */}
+          <div className='mx-auto mb-6 flex items-center justify-center'>
+            <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+          </div>
+          <p className='pixel-text text-sm text-[#5d4037]'>내 레시피를 불러오는 중...</p>
         </div>
-        <p className='pixel-text text-sm text-[#5d4037]'>내 레시피를 불러오는 중...</p>
       </div>
-    </div>
-  ) : (
+    );
+  }
+
+  if (needsLogin) {
+    return (
+      <main className='bg-background min-h-screen py-8'>
+        <div className='container mx-auto px-4'>
+          <div className='mb-8'>
+            <div className='mb-2 flex items-center gap-2'>
+              <ChefHat className='text-primary h-8 w-8' />
+              <h1 className='text-foreground text-3xl font-bold'>내 레시피</h1>
+            </div>
+            <p className='text-muted-foreground'>내가 만든 레시피를 확인하세요</p>
+          </div>
+          <LoginRequired
+            icon={ChefHat}
+            message='내 레시피를 보려면 로그인해주세요'
+            onLoginClick={requestLogin}
+          />
+        </div>
+        <LoginDialogComponent />
+      </main>
+    );
+  }
+
+  return (
     <main className='min-h-screen bg-[#fafafa] py-8'>
       <div className='container mx-auto px-4'>
         {/* 페이지 헤더 */}

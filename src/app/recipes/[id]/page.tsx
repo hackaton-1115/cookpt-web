@@ -7,8 +7,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { PixelIconBox } from '@/components/ui/pixel-icon-box';
+import { useLogin } from '@/hooks/useLogin';
 import { checkRecipeLiked, toggleRecipeLike } from '@/lib/recipe-likes';
 import { findRecipeById } from '@/lib/recipe-storage';
+import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
 
 const difficultyLabels = {
@@ -23,14 +25,23 @@ export default function RecipeDetailPage() {
   const [liked, setLiked] = useState<boolean>(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiking, setIsLiking] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const params = useParams();
   const router = useRouter();
+  const { requestLogin, LoginDialogComponent } = useLogin();
 
   useEffect(() => {
     const loadRecipe = async () => {
       // URL 디코딩 (한글 ID 처리)
       const id = decodeURIComponent(params.id as string);
+
+      // 로그인 상태 확인
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
 
       // Supabase에서 AI 생성 레시피 찾기
       const aiRecipe = await findRecipeById(id);
@@ -51,6 +62,12 @@ export default function RecipeDetailPage() {
 
   const handleLikeClick = async () => {
     if (!recipe || isLiking) return;
+
+    // 로그인하지 않은 경우 로그인 요청
+    if (!isLoggedIn) {
+      requestLogin();
+      return;
+    }
 
     setIsLiking(true);
     try {
@@ -100,7 +117,7 @@ export default function RecipeDetailPage() {
       <div className='border-b-4 border-[#5d4037] bg-[#ffe0e0] p-6'>
         <div className='mx-auto max-w-4xl'>
           <button
-            onClick={() => router.push('/recipes')}
+            onClick={() => router.back()}
             className='flex items-center gap-2 border-2 border-[#5d4037] bg-white px-4 py-2 text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
           >
             <ArrowLeft className='h-4 w-4' />
@@ -303,6 +320,9 @@ export default function RecipeDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* 로그인 다이얼로그 */}
+      <LoginDialogComponent />
     </div>
   );
 }
