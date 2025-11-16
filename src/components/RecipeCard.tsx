@@ -108,19 +108,17 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
           </div>
 
           {/* 좋아요 버튼 */}
-          {isLoggedIn && (
-            <button
-              onClick={handleLikeClick}
-              disabled={isLiking}
-              className='absolute right-2 bottom-2 flex h-9 w-9 items-center justify-center border-2 border-[#5d4037] bg-white/90 shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
-            >
-              <Heart
-                className={`h-5 w-5 transition-all ${
-                  liked ? 'fill-[#ff5252] text-[#ff5252]' : 'text-[#5d4037]'
-                }`}
-              />
-            </button>
-          )}
+          <button
+            onClick={handleLikeClick}
+            disabled={isLiking}
+            className='absolute right-2 bottom-2 flex h-9 w-9 items-center justify-center border-2 border-[#5d4037] bg-white/90 shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+          >
+            <Heart
+              className={`h-5 w-5 transition-all ${
+                liked ? 'fill-[#ff5252] text-[#ff5252]' : 'text-[#5d4037]'
+              }`}
+            />
+          </button>
         </div>
 
         {/* 콘텐츠 영역 */}
