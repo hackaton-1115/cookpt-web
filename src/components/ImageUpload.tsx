@@ -14,7 +14,8 @@ interface ImageUploadProps {
 
 export function ImageUpload({ onImageSelect }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
+  const [dragActive, setDragActive] = useState<boolean>(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
@@ -98,10 +99,10 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
 
             <div className='text-center'>
               <p className='text-foreground text-base font-semibold sm:text-lg'>
-                Upload ingredient photo
+                재료 사진 업로드
               </p>
               <p className='text-muted-foreground mt-1 text-xs sm:text-sm'>
-                Drag and drop or click to browse
+                드래그 앤 드롭 또는 클릭하여 선택하세요
               </p>
             </div>
 
@@ -112,7 +113,7 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
                 className='w-full sm:w-auto'
               >
                 <Upload className='mr-2 h-4 w-4' />
-                Choose File
+                파일 선택
               </Button>
               <Button
                 onClick={() => {
@@ -130,15 +131,15 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
                 className='w-full sm:w-auto'
               >
                 <Camera className='mr-2 h-4 w-4' />
-                Take Photo
+                사진 촬영
               </Button>
             </div>
 
-            <p className='text-muted-foreground text-xs'>Supports JPG, PNG, WEBP</p>
+            <p className='text-muted-foreground text-xs'>JPG, PNG, WEBP 지원</p>
           </div>
         </Card>
       ) : (
-        <Card className='relative overflow-hidden'>
+        <Card className='relative overflow-hidden py-0'>
           <Button
             onClick={clearImage}
             variant='destructive'
@@ -150,7 +151,7 @@ export function ImageUpload({ onImageSelect }: ImageUploadProps) {
           <div className='relative h-96 w-full'>
             <Image
               src={preview || '/placeholder.svg'}
-              alt='Uploaded ingredients'
+              alt='업로드된 재료'
               fill
               className='object-cover'
               unoptimized

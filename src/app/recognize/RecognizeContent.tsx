@@ -153,7 +153,7 @@ export default function RecognizeContent() {
           size='sm'
         >
           <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-          Back
+          뒤로 가기
         </Button>
 
         {error && (
@@ -190,7 +190,7 @@ export default function RecognizeContent() {
 
           <div className='mb-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2'>
             <div>
-              <Card className='mb-3 overflow-hidden sm:mb-4'>
+              <Card className='mb-3 overflow-hidden py-0 sm:mb-4'>
                 <div className='relative h-64 w-full sm:h-80'>
                   <Image
                     src={imageData || '/placeholder.svg'}

@@ -28,10 +28,23 @@ interface ImageGenerationError {
   error: string;
 }
 
-// 저장된 레시피 응답 타입
-interface SavedRecipeResponse extends AIGeneratedRecipe {
+// 저장된 레시피 응답 타입 (Recipe 타입과 일치)
+interface SavedRecipeResponse {
   id: string;
+  title: string;
+  description: string;
   image: string;
+  prepTime: number;
+  cookTime: number; // cookingTime 대신 cookTime 사용
+  servings: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  ingredients: Ingredient[];
+  instructions: string[];
+  nutrition: NutritionInfo;
+  category: string;
+  cookingTools: string[];
+  tags: string[];
+  likesCount: number;
 }
 
 // 프롬프트 생성 함수
@@ -362,9 +375,21 @@ export const POST = async (req: NextRequest) => {
           console.error('Failed to save recipe:', error);
         } else {
           savedRecipes.push({
-            ...recipe,
             id: recipeId,
+            title: recipe.title,
+            description: recipe.description,
             image: imageUrl,
+            prepTime: recipe.prepTime,
+            cookTime: recipe.cookingTime, // cookingTime → cookTime 매핑
+            servings: recipe.servings,
+            difficulty: recipe.difficulty,
+            ingredients: recipe.ingredients,
+            instructions: recipe.instructions,
+            nutrition: recipe.nutrition,
+            category: recipe.category,
+            cookingTools: recipe.cookingTools,
+            tags: recipe.tags,
+            likesCount: 0,
           });
         }
       } catch (error) {
