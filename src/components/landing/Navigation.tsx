@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { createClient } from '@/lib/supabase/client';
+import { isNativeApp, sendLogoutToNative } from '@/lib/supabase/native-auth';
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -50,6 +51,12 @@ export function Navigation() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+
+    // 네이티브 앱이면 저장된 토큰도 삭제하도록 알림
+    if (isNativeApp()) {
+      sendLogoutToNative();
+    }
+
     setUser(null);
   };
 
