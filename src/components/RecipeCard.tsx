@@ -123,7 +123,7 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
         {/* 콘텐츠 영역 */}
         <div className='p-4'>
           {/* 타이틀 */}
-          <h3 className='pixel-text mb-3 line-clamp-2 text-xs text-[#5d4037]'>{recipe.title}</h3>
+          <h3 className='pixel-text mb-3 line-clamp-2 text-base text-[#5d4037]'>{recipe.title}</h3>
 
           {/* 설명 */}
           <p className='mb-3 line-clamp-2 text-sm text-[#5d4037]/70'>{recipe.description}</p>

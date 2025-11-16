@@ -18,6 +18,7 @@ export function Navigation() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
@@ -97,22 +98,13 @@ export function Navigation() {
           >
             모든 레시피
           </Link>
-          <Link
-            href='/features'
-            className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'
-          >
+          <Link href='/' className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'>
             기능
           </Link>
-          <Link
-            href='/how-it-works'
-            className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'
-          >
+          <Link href='/' className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'>
             작동 방식
           </Link>
-          <Link
-            href='/download'
-            className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'
-          >
+          <Link href='/' className='text-[#5d4037]/70 transition-colors hover:text-[#5d4037]'>
             다운로드
           </Link>
         </div>
