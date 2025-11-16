@@ -1,84 +1,51 @@
-import { BookOpen, Brain, Camera } from 'lucide-react'
+import { ArrowRight } from 'lucide-react';
 
-import Image from 'next/image'
-
-import { Card, CardContent } from '@/components/ui/card'
+import { PixelCard } from '@/components/ui/pixel-card';
 
 const steps = [
   {
     number: '01',
-    icon: Camera,
-    title: '사진 촬영',
-    description: '냉장고 속 재료나 식재료를 카메라로 찍어주세요',
+    title: '사진 업로드',
+    description: '냉장고 속 식재료를 촬영하여 업로드하세요',
   },
   {
     number: '02',
-    icon: Brain,
-    title: 'AI 분석',
-    description: 'AI가 사진 속 재료를 인식하고 최적의 조합을 분석합니다',
+    title: '옵션 선택',
+    description: '원하는 음식 국적, 스타일, 조리 도구를 선택하세요',
   },
   {
     number: '03',
-    icon: BookOpen,
-    title: '레시피 추천',
-    description: '당신만을 위한 맞춤 레시피를 즉시 확인하고 요리를 시작하세요',
+    title: '레시피 생성',
+    description: 'AI가 맞춤형 레시피를 즉시 생성해드립니다',
   },
-]
+];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="px-4 py-12 sm:py-20">
-      <div className="container mx-auto">
-        <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
-          <h2 className="mb-4 text-3xl sm:mb-6 sm:text-4xl lg:text-5xl">
-            <span className="text-primary">3단계</span>로 완성되는
-            <br />
-            간편한 레시피 찾기
-          </h2>
-          <p className="text-muted-foreground text-lg sm:text-xl">
-            복잡한 과정 없이 누구나 쉽게 사용할 수 있습니다
-          </p>
-        </div>
+    <section id='how-it-works' className='px-6 py-16'>
+      <div className='mx-auto max-w-6xl'>
+        <h2 className='pixel-text mb-12 text-center text-xl text-[#5d4037]'>사용 방법</h2>
 
-        <div className="mb-12 grid items-center gap-8 sm:mb-16 lg:grid-cols-2 lg:gap-12">
-          <div className="space-y-4 sm:space-y-6">
-            {steps.map((step, index) => (
-              <div key={index} className="relative">
-                <Card className="bg-card/50 border-primary/10 hover:border-primary/30 transition-all">
-                  <CardContent className="flex items-start gap-4 p-6">
-                    <div className="flex-shrink-0">
-                      <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg">
-                        <step.icon className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="mb-2 text-sm text-primary">{step.number}</div>
-                      <h3 className="mb-2 text-xl">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-                {index < steps.length - 1 && (
-                  <div className="from-primary/50 absolute left-8 top-full hidden h-6 w-px bg-gradient-to-b to-transparent lg:block" />
-                )}
-              </div>
-            ))}
-          </div>
+        <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
+          {steps.map((step, index) => (
+            <div key={index} className='relative'>
+              <PixelCard className='p-6 text-center'>
+                <div className='pixel-shadow-sm mx-auto mb-4 flex h-16 w-16 items-center justify-center border-4 border-[#5d4037] bg-[#ff5252]'>
+                  <span className='pixel-text text-xl text-white'>{step.number}</span>
+                </div>
+                <h3 className='pixel-text mb-3 text-xs text-[#5d4037]'>{step.title}</h3>
+                <p className='text-sm text-[#5d4037]/70'>{step.description}</p>
+              </PixelCard>
 
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
-            <div className="border-primary/20 shadow-primary/10 relative overflow-hidden rounded-2xl border shadow-2xl">
-              <Image
-                src="/slide2.png"
-                alt="Smartphone food photography"
-                width={1080}
-                height={720}
-                className="h-auto w-full"
-              />
+              {index < steps.length - 1 && (
+                <div className='absolute top-1/2 right-0 hidden translate-x-1/2 -translate-y-1/2 md:block'>
+                  <ArrowRight className='h-8 w-8 text-[#5d4037]/30' />
+                </div>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

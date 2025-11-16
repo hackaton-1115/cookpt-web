@@ -1,6 +1,15 @@
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
+
+import { Press_Start_2P } from 'next/font/google';
 import './globals.css';
+
+const pressStart2P = Press_Start_2P({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-pixel',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'CookPT - AI 냉장고 재료 기반 한식 레시피 추천',
@@ -32,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko'>
-      <body className={`font-sans antialiased`}>
+      <body className={`${pressStart2P.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

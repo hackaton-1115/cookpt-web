@@ -67,3 +67,94 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Pixel Art Style - 16-bit retro design system */
+@layer utilities {
+  /* Pixel Text */
+  .pixel-text {
+    font-family: var(--font-pixel), 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    word-spacing: -0.1em;
+    image-rendering: pixelated;
+    line-height: 1.6;
+  }
+
+  /* Pixel Button */
+  .pixel-button {
+    border-radius: 0;
+    image-rendering: pixelated;
+    transition: all 0.1s cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  .pixel-button:active {
+    transform: translate(2px, 2px) !important;
+  }
+
+  /* Pixel Shadow Utilities */
+  .pixel-shadow {
+    box-shadow: 8px 8px 0px 0px rgba(93, 64, 55, 1);
+  }
+
+  .pixel-shadow-sm {
+    box-shadow: 4px 4px 0px 0px rgba(93, 64, 55, 1);
+  }
+
+  .pixel-shadow-none {
+    box-shadow: none;
+  }
+
+  /* Pixel Animation */
+  @keyframes pixel-rotate {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+  }
+
+  .pixel-rotate {
+    animation: pixel-rotate 8s ease-in-out infinite;
+  }
+
+  /* Pixel Corners (optional) */
+  .pixel-corners {
+    border-radius: 0;
+    clip-path: polygon(
+      0 4px,
+      4px 4px,
+      4px 0,
+      calc(100% - 4px) 0,
+      calc(100% - 4px) 4px,
+      100% 4px,
+      100% calc(100% - 4px),
+      calc(100% - 4px) calc(100% - 4px),
+      calc(100% - 4px) 100%,
+      4px 100%,
+      4px calc(100% - 4px),
+      0 calc(100% - 4px)
+    );
+  }
+
+  /* Pixel Border */
+  .pixel-border {
+    border-width: 4px;
+    border-style: solid;
+    border-color: #5d4037;
+  }
+
+  .pixel-border-thin {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #5d4037;
+  }
+
+  /* Pixelated Image Rendering */
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+}
