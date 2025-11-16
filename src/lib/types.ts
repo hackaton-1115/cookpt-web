@@ -49,6 +49,9 @@ export interface RecognizeImageResponse {
 
 export interface GenerateRecipesRequest {
   ingredients: string[]; // 재료 목록
+  theme?: string; // 테마 ID (예: "quick", "microwave")
+  cuisine?: string; // 국적 ID (예: "korean", "japanese")
+  tools?: string[]; // 조리 도구 ID 배열
 }
 
 export interface GenerateRecipesResponse {
