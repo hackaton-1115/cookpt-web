@@ -179,3 +179,113 @@ export const findRecipesByUserId = async (userId: string): Promise<Recipe[]> => 
     return [];
   }
 };
+
+/**
+ * 특정 사용자의 페이지네이션된 레시피 목록 가져오기
+ * @param userId 사용자 ID
+ * @param page 현재 페이지 번호 (1부터 시작)
+ * @param pageSize 페이지당 레시피 개수
+ * @returns 레시피 목록과 전체 개수
+ */
+export const findRecipesByUserIdPaginated = async (
+  userId: string,
+  page: number = 1,
+  pageSize: number = 12,
+): Promise<{ recipes: Recipe[]; totalCount: number }> => {
+  try {
+    const supabase = getSupabase();
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    // 사용자의 전체 레시피 개수 조회
+    const { count } = await supabase
+      .from('recipes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    // 페이지네이션된 레시피 조회
+    const { data: recipes, error } = await supabase
+      .from('recipes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      console.error('사용자 페이지네이션 레시피 불러오기 실패:', error);
+      return { recipes: [], totalCount: 0 };
+    }
+
+    return {
+      recipes: recipes?.map(convertToRecipe) || [],
+      totalCount: count || 0,
+    };
+  } catch (error) {
+    console.error('사용자 페이지네이션 레시피 불러오기 실패:', error);
+    return { recipes: [], totalCount: 0 };
+  }
+};
+
+/**
+ * 사용자가 좋아요한 페이지네이션된 레시피 목록 가져오기
+ * @param userId 사용자 ID
+ * @param page 현재 페이지 번호 (1부터 시작)
+ * @param pageSize 페이지당 레시피 개수
+ * @returns 레시피 목록과 전체 개수
+ */
+export const findLikedRecipesPaginated = async (
+  userId: string,
+  page: number = 1,
+  pageSize: number = 12,
+): Promise<{ recipes: Recipe[]; totalCount: number }> => {
+  try {
+    const supabase = getSupabase();
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    // 사용자가 좋아요한 전체 레시피 개수 조회
+    const { count } = await supabase
+      .from('recipe_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    // 좋아요한 레시피 ID 조회 (페이지네이션)
+    const { data: likes, error: likesError } = await supabase
+      .from('recipe_likes')
+      .select('recipe_id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (likesError || !likes || likes.length === 0) {
+      return { recipes: [], totalCount: count || 0 };
+    }
+
+    // 레시피 ID 목록 추출
+    const recipeIds = likes.map((like) => like.recipe_id);
+
+    // 레시피 조회
+    const { data: recipes, error: recipesError } = await supabase
+      .from('recipes')
+      .select('*')
+      .in('id', recipeIds);
+
+    if (recipesError || !recipes) {
+      console.error('좋아요한 레시피 조회 실패:', recipesError);
+      return { recipes: [], totalCount: count || 0 };
+    }
+
+    // 좋아요 순서대로 정렬
+    const sortedRecipes = recipeIds
+      .map((id) => recipes.find((r) => r.id === id))
+      .filter((r) => r !== undefined);
+
+    return {
+      recipes: sortedRecipes.map(convertToRecipe),
+      totalCount: count || 0,
+    };
+  } catch (error) {
+    console.error('좋아요한 페이지네이션 레시피 불러오기 실패:', error);
+    return { recipes: [], totalCount: 0 };
+  }
+};
