@@ -139,7 +139,7 @@ export function Navigation() {
                         size='lg'
                         className='bg-primary hover:bg-primary/90 hidden md:inline-flex'
                       >
-                        앱 시작하기
+                        로그인
                       </Button>
                     }
                   />
@@ -234,7 +234,7 @@ export function Navigation() {
                     <LoginDialog
                       trigger={
                         <Button size='lg' className='bg-primary hover:bg-primary/90 mt-4 w-full'>
-                          앱 시작하기
+                          로그인
                         </Button>
                       }
                     />
