@@ -1,21 +1,13 @@
 'use client';
 
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-import { ChefHat, Menu, User, X } from 'lucide-react';
+import { ChefHat, ChevronDown, Menu, User, X } from 'lucide-react';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import LoginDialog from '@/components/auth/LoginDialog';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { PixelButton } from '@/components/ui/pixel-button';
 import { createClient } from '@/lib/supabase/client';
 
@@ -23,7 +15,11 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
@@ -49,9 +45,32 @@ export function Navigation() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
+  // 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setDropdownOpen(false);
+  };
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    setDropdownOpen(false);
   };
 
   return (
@@ -95,53 +114,70 @@ export function Navigation() {
           {!isLoading && (
             <>
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant='ghost'
-                      className='hidden gap-2 border-2 border-[#5d4037] bg-white hover:bg-white/90 md:inline-flex'
-                    >
-                      <User className='h-4 w-4' />
-                      <span className='max-w-[150px] truncate'>
-                        {user.user_metadata?.full_name || user.email}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align='end' className='border-2 border-[#5d4037] bg-white'>
-                    <DropdownMenuLabel>내 계정</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href='/mypage'>마이페이지</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href='/upload'>앱 시작하기</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className='text-red-600'>
-                      로그아웃
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                /* 로그인된 사용자 드롭다운 */
+                <div className='relative hidden md:block' ref={dropdownRef}>
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className='flex items-center gap-2 border-2 border-[#5d4037] bg-white px-4 py-2 text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+                  >
+                    <User className='h-4 w-4' />
+                    <span className='max-w-[150px] truncate text-sm'>
+                      {user.user_metadata?.full_name || user.email}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {/* 픽셀 드롭다운 메뉴 */}
+                  {dropdownOpen && (
+                    <div className='absolute top-full right-0 mt-2 w-48 border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+                      <div className='border-b-2 border-[#5d4037] px-4 py-3'>
+                        <p className='pixel-text text-xs text-[#5d4037]'>내 계정</p>
+                      </div>
+                      <button
+                        onClick={() => handleNavigation('/mypage')}
+                        className='w-full border-b-2 border-[#5d4037]/20 px-4 py-3 text-left text-sm text-[#5d4037] transition-colors hover:bg-[#ffe0e0]'
+                      >
+                        마이페이지
+                      </button>
+                      <button
+                        onClick={() => handleNavigation('/upload')}
+                        className='w-full border-b-2 border-[#5d4037]/20 px-4 py-3 text-left text-sm text-[#5d4037] transition-colors hover:bg-[#ffe0e0]'
+                      >
+                        앱 시작하기
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className='w-full px-4 py-3 text-left text-sm text-[#ff5252] transition-colors hover:bg-[#ffe0e0]'
+                      >
+                        로그아웃
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <LoginDialog
-                  trigger={
-                    <PixelButton variant='primary' className='hidden whitespace-nowrap md:inline-flex'>
-                      앱 시작하기
-                    </PixelButton>
-                  }
-                />
+                /* 로그인 버튼 */
+                <>
+                  <PixelButton
+                    variant='primary'
+                    className='hidden whitespace-nowrap md:inline-flex'
+                    onClick={() => setLoginDialogOpen(true)}
+                  >
+                    로그인
+                  </PixelButton>
+                  <LoginDialog isOpen={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
+                </>
               )}
             </>
           )}
 
-          <Button
-            size='lg'
-            variant='ghost'
-            className='border-2 border-[#5d4037] bg-white hover:bg-white/90 md:hidden'
+          <button
+            className='flex h-10 w-10 items-center justify-center border-2 border-[#5d4037] bg-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none md:hidden'
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className='h-6 w-6' /> : <Menu className='h-6 w-6' />}
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -188,40 +224,48 @@ export function Navigation() {
                         {user.user_metadata?.full_name || user.email}
                       </span>
                     </div>
+                    <Link href='/mypage' onClick={() => setMobileMenuOpen(false)}>
+                      <button className='mb-2 w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'>
+                        마이페이지
+                      </button>
+                    </Link>
                     <Link href='/favorites' onClick={() => setMobileMenuOpen(false)}>
-                      <Button
-                        size='lg'
-                        variant='outline'
-                        className='mb-2 w-full border-2 border-[#5d4037] bg-white'
-                      >
+                      <button className='mb-2 w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'>
                         좋아요한 레시피
-                      </Button>
+                      </button>
                     </Link>
                     <Link href='/upload' onClick={() => setMobileMenuOpen(false)}>
                       <PixelButton variant='primary' className='w-full whitespace-nowrap'>
                         앱 시작하기
                       </PixelButton>
                     </Link>
-                    <Button
-                      variant='outline'
-                      size='lg'
-                      className='mt-2 w-full border-2 border-[#5d4037] bg-white text-red-600'
+                    <button
+                      className='mt-2 w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
                       onClick={() => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
                     >
                       로그아웃
-                    </Button>
+                    </button>
                   </div>
                 ) : (
-                  <LoginDialog
-                    trigger={
-                      <PixelButton variant='primary' className='mt-4 w-full whitespace-nowrap'>
-                        앱 시작하기
-                      </PixelButton>
-                    }
-                  />
+                  <>
+                    <PixelButton
+                      variant='primary'
+                      className='mt-4 w-full whitespace-nowrap'
+                      onClick={() => {
+                        setLoginDialogOpen(true);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      로그인
+                    </PixelButton>
+                    <LoginDialog
+                      isOpen={loginDialogOpen}
+                      onClose={() => setLoginDialogOpen(false)}
+                    />
+                  </>
                 )}
               </>
             )}

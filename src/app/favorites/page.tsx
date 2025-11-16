@@ -1,12 +1,12 @@
 'use client';
 
-import { Heart, Loader2 } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
-import { Button } from '@/components/ui/button';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { getLikedRecipeIds } from '@/lib/recipe-likes';
 import { findRecipesByIds } from '@/lib/recipe-storage';
 import { createClient } from '@/lib/supabase/client';
@@ -48,21 +48,27 @@ export default function FavoritesPage() {
   }, []);
 
   return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
       <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>좋아요한 레시피를 불러오는 중...</h2>
+        {/* 픽셀 로더 */}
+        <div className='mx-auto mb-6 flex items-center justify-center'>
+          <PixelIconBox icon={Heart} variant='primary' size='large' className='pixel-rotate' />
+        </div>
+        <p className='pixel-text text-sm text-[#5d4037]'>좋아요한 레시피를 불러오는 중...</p>
       </div>
     </div>
   ) : (
-    <main className='bg-background min-h-screen py-8'>
+    <main className='min-h-screen bg-[#fafafa] py-8'>
       <div className='container mx-auto px-4'>
-        <div className='mb-8'>
-          <div className='mb-2 flex items-center gap-2'>
-            <Heart className='h-8 w-8 fill-red-500 text-red-500' />
-            <h1 className='text-foreground text-3xl font-bold'>좋아요한 레시피</h1>
+        {/* 페이지 헤더 */}
+        <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+          <div className='mb-3 flex items-center gap-3'>
+            <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <Heart className='h-6 w-6 fill-white text-white' />
+            </div>
+            <h1 className='pixel-text text-base text-[#5d4037]'>좋아요한 레시피</h1>
           </div>
-          <p className='text-muted-foreground'>
+          <p className='text-sm text-[#5d4037]/70'>
             {recipes.length > 0
               ? `${recipes.length}개의 레시피를 좋아요 했습니다`
               : '아직 좋아요한 레시피가 없습니다'}
@@ -70,17 +76,33 @@ export default function FavoritesPage() {
         </div>
 
         {recipes.length === 0 ? (
-          <div className='text-center py-12'>
-            <Heart className='text-muted-foreground mx-auto mb-4 h-16 w-16' />
-            <p className='text-muted-foreground mb-4 text-lg'>
+          <div className='py-16 text-center'>
+            {/* 빈 상태 아이콘 박스 */}
+            <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <Heart className='h-12 w-12 text-[#5d4037]/50' />
+            </div>
+            <h3 className='pixel-text mb-3 text-sm text-[#5d4037]'>
+              {isLoggedIn ? '아직 좋아요한 레시피가 없습니다' : '로그인이 필요합니다'}
+            </h3>
+            <p className='mx-auto mb-6 max-w-md text-sm text-[#5d4037]/60'>
               {isLoggedIn
-                ? '아직 좋아요한 레시피가 없습니다.'
+                ? '레시피 페이지에서 마음에 드는 레시피를 찾아보세요!'
                 : '로그인하고 좋아하는 레시피를 저장해보세요!'}
             </p>
             {!isLoggedIn ? (
-              <Button onClick={() => router.push('/login')}>로그인하기</Button>
+              <button
+                onClick={() => router.push('/login')}
+                className='inline-flex items-center gap-2 border-4 border-[#5d4037] bg-[#ff5252] px-8 py-4 text-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'
+              >
+                <span className='pixel-text text-xs'>로그인하기</span>
+              </button>
             ) : (
-              <Button onClick={() => router.push('/recipes')}>레시피 찾아보기</Button>
+              <button
+                onClick={() => router.push('/recipes')}
+                className='inline-flex items-center gap-2 border-4 border-[#5d4037] bg-[#ff5252] px-8 py-4 text-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'
+              >
+                <span className='pixel-text text-xs'>레시피 찾아보기</span>
+              </button>
             )}
           </div>
         ) : (

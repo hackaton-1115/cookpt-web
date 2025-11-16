@@ -1,10 +1,11 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { ChefHat } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
 import { loadGeneratedRecipes } from '@/lib/recipe-storage';
 import { Recipe } from '@/lib/types';
@@ -37,26 +38,43 @@ export default function AllRecipesPage() {
   }, []);
 
   return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
       <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>레시피를 불러오는 중...</h2>
+        {/* 픽셀 로더 */}
+        <div className='mx-auto mb-6 flex items-center justify-center'>
+          <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+        </div>
+        <p className='pixel-text text-sm text-[#5d4037]'>레시피를 불러오는 중...</p>
       </div>
     </div>
   ) : (
-    <main className='bg-background min-h-screen py-8'>
+    <main className='min-h-screen bg-[#fafafa] py-8'>
       <div className='container mx-auto px-4'>
-        <div className='mb-8'>
-          <h1 className='text-foreground mb-2 text-3xl font-bold'>모든 레시피</h1>
-          <p className='text-muted-foreground'>
+        {/* 페이지 헤더 */}
+        <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
+          <div className='mb-3 flex items-center gap-3'>
+            <div className='flex h-12 w-12 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-6 w-6 text-white' />
+            </div>
+            <h1 className='pixel-text text-base text-[#5d4037]'>모든 레시피</h1>
+          </div>
+          <p className='text-sm text-[#5d4037]/70'>
             AI가 생성한 모든 레시피를 확인하세요 ({recipes.length}개)
           </p>
         </div>
 
         {recipes.length === 0 ? (
-          <div className='text-muted-foreground py-12 text-center'>
-            <p className='mb-4 text-lg'>아직 생성된 레시피가 없습니다.</p>
-            <p>재료 사진을 업로드하여 첫 레시피를 만들어보세요!</p>
+          <div className='py-16 text-center'>
+            {/* 빈 상태 아이콘 박스 */}
+            <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-12 w-12 text-[#5d4037]/50' />
+            </div>
+            <h3 className='pixel-text mb-3 text-sm text-[#5d4037]'>
+              아직 생성된 레시피가 없습니다
+            </h3>
+            <p className='mx-auto mb-6 max-w-md text-sm text-[#5d4037]/60'>
+              재료 사진을 업로드하여 첫 레시피를 만들어보세요!
+            </p>
           </div>
         ) : (
           <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
