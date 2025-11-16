@@ -7,6 +7,7 @@ interface IngredientCardProps {
   category: string;
   selected: boolean;
   onToggle: () => void;
+  isManual?: boolean;
 }
 
 export function IngredientCard({
@@ -15,6 +16,7 @@ export function IngredientCard({
   category,
   selected,
   onToggle,
+  isManual = false,
 }: IngredientCardProps) {
   return (
     <div
@@ -32,13 +34,20 @@ export function IngredientCard({
             <span className='border-2 border-[#5d4037] bg-white px-2 py-1 text-xs text-[#5d4037]'>
               {category}
             </span>
+            {isManual && (
+              <span className='border-2 border-[#ff5252] bg-[#ffe0e0] px-2 py-1 text-xs text-[#ff5252]'>
+                직접 추가
+              </span>
+            )}
           </div>
-          <div className='flex items-center gap-2'>
-            <PixelProgressBar value={confidence * 100} className='flex-1' />
-            <span className='text-xs whitespace-nowrap text-[#5d4037]/70'>
-              {Math.round(confidence * 100)}%
-            </span>
-          </div>
+          {!isManual && (
+            <div className='flex items-center gap-2'>
+              <PixelProgressBar value={confidence * 100} className='flex-1' />
+              <span className='text-xs whitespace-nowrap text-[#5d4037]/70'>
+                {Math.round(confidence * 100)}%
+              </span>
+            </div>
+          )}
         </div>
         <PixelCheckbox checked={selected} onToggle={onToggle} className='shrink-0' />
       </div>

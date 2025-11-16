@@ -34,6 +34,7 @@ export interface RecognizedIngredient {
   name: string;
   confidence: number;
   category: string;
+  isManual?: boolean; // 사용자가 직접 추가한 재료 여부
 }
 
 // API Request/Response types

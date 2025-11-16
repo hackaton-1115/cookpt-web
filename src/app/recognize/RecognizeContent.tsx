@@ -1,6 +1,14 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, ChefHat, Flame, UtensilsCrossed, Utensils } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChefHat,
+  Flame,
+  Plus,
+  UtensilsCrossed,
+  Utensils,
+} from 'lucide-react';
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,13 +18,30 @@ import { CookingToolCard } from '@/components/CookingToolCard';
 import { CuisineCard } from '@/components/CuisineCard';
 import { IngredientCard } from '@/components/IngredientCard';
 import { ThemeCard } from '@/components/ThemeCard';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { PixelAlert } from '@/components/ui/pixel-alert';
 import { PixelButton } from '@/components/ui/pixel-button';
 import { PixelCard } from '@/components/ui/pixel-card';
 import { PixelIconBox } from '@/components/ui/pixel-icon-box';
+import { PixelInput } from '@/components/ui/pixel-input';
+import {
+  PixelSelect,
+  PixelSelectContent,
+  PixelSelectItem,
+  PixelSelectTrigger,
+  PixelSelectValue,
+} from '@/components/ui/pixel-select';
 import { COOKING_TOOLS } from '@/lib/cooking-tool-data';
 import { CUISINES } from '@/lib/cuisine-data';
 import { getImageUrl } from '@/lib/image-storage';
+import { INGREDIENT_CATEGORIES } from '@/lib/ingredient-categories';
 import { recognizeIngredients } from '@/lib/ingredient-recognition';
 import { getThemesByCategory, THEME_CATEGORIES } from '@/lib/theme-data';
 import { RecognizedIngredient } from '@/lib/types';
@@ -30,6 +55,12 @@ export default function RecognizeContent() {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
+
+  // 수동 재료 추가 관련 상태
+  const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
+  const [newIngredientName, setNewIngredientName] = useState<string>('');
+  const [newIngredientCategory, setNewIngredientCategory] = useState<string>('Other');
+  const [inputError, setInputError] = useState<string | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -97,6 +128,64 @@ export default function RecognizeContent() {
       }
       return next;
     });
+  };
+
+  // 재료 입력 유효성 검증
+  const validateIngredientInput = (name: string): string | null => {
+    if (!name || name.trim().length === 0) {
+      return '재료 이름을 입력해주세요.';
+    }
+
+    if (name.trim().length > 50) {
+      return '재료 이름은 50자 이하로 입력해주세요.';
+    }
+
+    const isDuplicate = ingredients.some(
+      (ing) => ing.name.toLowerCase() === name.toLowerCase().trim(),
+    );
+    if (isDuplicate) {
+      return '이미 추가된 재료입니다.';
+    }
+
+    const hasSpecialChars = /[<>{}[\]\\\/]/.test(name);
+    if (hasSpecialChars) {
+      return '재료 이름에 특수문자를 사용할 수 없습니다.';
+    }
+
+    return null;
+  };
+
+  // 수동 재료 추가
+  const handleAddIngredient = () => {
+    const validationError = validateIngredientInput(newIngredientName);
+    if (validationError) {
+      setInputError(validationError);
+      return;
+    }
+
+    const newIngredient: RecognizedIngredient = {
+      name: newIngredientName.trim(),
+      confidence: 1.0,
+      category: newIngredientCategory,
+      isManual: true,
+    };
+
+    setIngredients([...ingredients, newIngredient]);
+    setSelectedIngredients((prev) => new Set([...prev, newIngredient.name]));
+
+    // 폼 초기화
+    setNewIngredientName('');
+    setNewIngredientCategory('Other');
+    setInputError(null);
+    setShowAddDialog(false);
+  };
+
+  // Dialog 열기
+  const handleOpenDialog = () => {
+    setNewIngredientName('');
+    setNewIngredientCategory('Other');
+    setInputError(null);
+    setShowAddDialog(true);
   };
 
   const handleContinue = () => {
@@ -170,10 +259,18 @@ export default function RecognizeContent() {
 
         {/* 재료 선택 섹션 */}
         <div className='mb-12'>
-          <div className='mb-6 flex items-center gap-3 border-b-4 border-[#5d4037] pb-3'>
-            <UtensilsCrossed className='h-6 w-6 text-[#5d4037]' />
-            <h2 className='pixel-text text-base text-[#5d4037]'>인식된 재료</h2>
-            <span className='text-sm text-[#5d4037]/70'>({selectedIngredients.size}개 선택됨)</span>
+          <div className='mb-6 flex flex-wrap items-center justify-between gap-3 border-b-4 border-[#5d4037] pb-3'>
+            <div className='flex items-center gap-3'>
+              <UtensilsCrossed className='h-6 w-6 text-[#5d4037]' />
+              <h2 className='pixel-text text-base text-[#5d4037]'>인식된 재료</h2>
+              <span className='text-sm text-[#5d4037]/70'>
+                ({selectedIngredients.size}개 선택됨)
+              </span>
+            </div>
+            <PixelButton variant='secondary' size='regular' onClick={handleOpenDialog}>
+              <Plus className='h-4 w-4' />
+              <span className='pixel-text text-md ml-2'>재료 추가</span>
+            </PixelButton>
           </div>
 
           <div className='mb-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2'>
@@ -209,6 +306,7 @@ export default function RecognizeContent() {
                     category={ingredient.category}
                     selected={selectedIngredients.has(ingredient.name)}
                     onToggle={() => toggleIngredient(ingredient.name)}
+                    isManual={ingredient.isManual}
                   />
                 ))}
 
@@ -306,7 +404,7 @@ export default function RecognizeContent() {
                 disabled={selectedIngredients.size === 0}
                 className='inline-flex items-center gap-3'
               >
-                <span className='pixel-text text-xs'>
+                <span className='pixel-text text-base'>
                   레시피 찾기 ({selectedIngredients.size}개 재료)
                 </span>
                 <ArrowRight className='h-5 w-5' />
@@ -315,6 +413,78 @@ export default function RecognizeContent() {
           </div>
         </div>
       </div>
+
+      {/* 재료 추가 Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className='max-w-md border-4 border-[#5d4037] bg-white p-0'>
+          <DialogHeader className='border-b-4 border-[#5d4037] bg-[#ffe0e0] p-6'>
+            <DialogTitle className='pixel-text text-xl text-[#5d4037]'>재료 직접 추가</DialogTitle>
+            <DialogDescription className='text-sm text-[#5d4037]/70'>
+              AI가 인식하지 못한 재료를 직접 추가할 수 있습니다.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className='space-y-4 p-6'>
+            <div>
+              <label className='pixel-text mb-2 block text-sm font-semibold text-[#5d4037]'>
+                재료 이름 <span className='text-[#ff5252]'>*</span>
+              </label>
+              <PixelInput
+                value={newIngredientName}
+                onChange={(e) => {
+                  setNewIngredientName(e.target.value);
+                  setInputError(null);
+                }}
+                placeholder='예: 당근, 양파, 고추'
+                error={!!inputError}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddIngredient();
+                  }
+                }}
+              />
+              {inputError && <p className='pixel-text mt-2 text-xs text-[#ff5252]'>{inputError}</p>}
+            </div>
+
+            <div>
+              <label className='pixel-text mb-2 block text-sm font-semibold text-[#5d4037]'>
+                카테고리
+              </label>
+              <PixelSelect value={newIngredientCategory} onValueChange={setNewIngredientCategory}>
+                <PixelSelectTrigger>
+                  <PixelSelectValue />
+                </PixelSelectTrigger>
+                <PixelSelectContent>
+                  {INGREDIENT_CATEGORIES.map((cat) => (
+                    <PixelSelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </PixelSelectItem>
+                  ))}
+                </PixelSelectContent>
+              </PixelSelect>
+            </div>
+          </div>
+
+          <DialogFooter className='flex flex-col gap-2 border-t-4 border-[#5d4037] bg-[#f5f5f5] p-6 sm:flex-row'>
+            <PixelButton
+              variant='secondary'
+              size='regular'
+              onClick={() => setShowAddDialog(false)}
+              className='w-full sm:w-auto'
+            >
+              <span className='pixel-text text-md'>취소</span>
+            </PixelButton>
+            <PixelButton
+              variant='primary'
+              size='regular'
+              onClick={handleAddIngredient}
+              className='w-full sm:w-auto'
+            >
+              <span className='pixel-text text-md'>추가</span>
+            </PixelButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
