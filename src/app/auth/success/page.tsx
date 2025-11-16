@@ -1,10 +1,11 @@
 'use client';
 
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, ChefHat } from 'lucide-react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { createClient } from '@/lib/supabase/client';
 import { isNativeApp, setupNativeMessageListener } from '@/lib/supabase/native-auth';
 
@@ -74,27 +75,36 @@ export default function AuthSuccessPage() {
   }, [router, searchParams]);
 
   return (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
       <div className='text-center'>
         {status === 'loading' && (
           <>
-            <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-            <h2 className='mb-2 text-xl font-semibold'>로그인 처리 중...</h2>
+            {/* 픽셀 로더 */}
+            <div className='mx-auto mb-6 flex items-center justify-center'>
+              <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+            </div>
+            <h2 className='pixel-text mb-3 text-sm text-[#5d4037]'>로그인 처리 중...</h2>
           </>
         )}
 
         {status === 'success' && (
           <>
-            <CheckCircle className='mx-auto mb-4 h-12 w-12 text-green-500' />
-            <h2 className='mb-2 text-xl font-semibold'>로그인 성공!</h2>
-            <p className='text-muted-foreground'>네이티브 앱으로 인증 정보를 전송했습니다.</p>
+            {/* 성공 아이콘 박스 */}
+            <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ff5252] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <CheckCircle className='h-12 w-12 text-white' />
+            </div>
+            <h2 className='pixel-text mb-3 text-sm text-[#5d4037]'>로그인 성공!</h2>
+            <p className='text-sm text-[#5d4037]/70'>네이티브 앱으로 인증 정보를 전송했습니다.</p>
           </>
         )}
 
         {status === 'redirecting' && (
           <>
-            <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-            <h2 className='mb-2 text-xl font-semibold'>페이지 이동 중...</h2>
+            {/* 픽셀 로더 */}
+            <div className='mx-auto mb-6 flex items-center justify-center'>
+              <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+            </div>
+            <h2 className='pixel-text mb-3 text-sm text-[#5d4037]'>페이지 이동 중...</h2>
           </>
         )}
       </div>
