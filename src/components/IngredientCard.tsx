@@ -1,8 +1,5 @@
-import { Check, X } from 'lucide-react';
-
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { PixelCheckbox } from '@/components/ui/pixel-checkbox';
+import { PixelProgressBar } from '@/components/ui/pixel-progress-bar';
 
 interface IngredientCardProps {
   name: string;
@@ -20,44 +17,31 @@ export function IngredientCard({
   onToggle,
 }: IngredientCardProps) {
   return (
-    <Card
-      className={`cursor-pointer p-3 transition-all sm:p-4 ${
-        selected ? 'border-primary bg-primary/5 ring-primary ring-2' : 'hover:border-primary/50'
+    <div
+      className={`pixel-shadow cursor-pointer border-4 p-4 transition-all ${
+        selected
+          ? 'border-[#ff5252] bg-[#ffe0e0]'
+          : 'border-[#5d4037] bg-white hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
       }`}
       onClick={onToggle}
     >
-      <div className='flex items-start justify-between gap-2 sm:gap-3'>
+      <div className='flex items-start justify-between gap-3'>
         <div className='min-w-0 flex-1'>
-          <div className='mb-1 flex flex-wrap items-center gap-2'>
-            <h3 className='text-base font-semibold sm:text-lg'>{name}</h3>
-            <Badge variant='secondary' className='text-xs'>
+          <div className='mb-2 flex flex-wrap items-center gap-2'>
+            <h3 className='text-base font-semibold text-[#5d4037]'>{name}</h3>
+            <span className='border-2 border-[#5d4037] bg-white px-2 py-1 text-xs text-[#5d4037]'>
               {category}
-            </Badge>
+            </span>
           </div>
           <div className='flex items-center gap-2'>
-            <div className='bg-muted h-1.5 flex-1 overflow-hidden rounded-full sm:h-2'>
-              <div
-                className='bg-primary h-full transition-all'
-                style={{ width: `${confidence * 100}%` }}
-              />
-            </div>
-            <span className='text-muted-foreground text-xs whitespace-nowrap sm:text-sm'>
+            <PixelProgressBar value={confidence * 100} className='flex-1' />
+            <span className='text-xs whitespace-nowrap text-[#5d4037]/70'>
               {Math.round(confidence * 100)}%
             </span>
           </div>
         </div>
-        <Button
-          size='icon'
-          variant={selected ? 'default' : 'outline'}
-          className='h-8 w-8 shrink-0 rounded-full sm:h-9 sm:w-9'
-        >
-          {selected ? (
-            <Check className='h-3 w-3 sm:h-4 sm:w-4' />
-          ) : (
-            <X className='h-3 w-3 sm:h-4 sm:w-4' />
-          )}
-        </Button>
+        <PixelCheckbox checked={selected} onToggle={onToggle} className='shrink-0' />
       </div>
-    </Card>
+    </div>
   );
 }

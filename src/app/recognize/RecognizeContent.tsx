@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  ArrowRight,
-  ChefHat,
-  Flame,
-  Loader2,
-  UtensilsCrossed,
-  Utensils,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChefHat, Flame, UtensilsCrossed, Utensils } from 'lucide-react';
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -19,9 +10,10 @@ import { CookingToolCard } from '@/components/CookingToolCard';
 import { CuisineCard } from '@/components/CuisineCard';
 import { IngredientCard } from '@/components/IngredientCard';
 import { ThemeCard } from '@/components/ThemeCard';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { PixelAlert } from '@/components/ui/pixel-alert';
+import { PixelButton } from '@/components/ui/pixel-button';
+import { PixelCard } from '@/components/ui/pixel-card';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { COOKING_TOOLS } from '@/lib/cooking-tool-data';
 import { CUISINES } from '@/lib/cuisine-data';
 import { getImageUrl } from '@/lib/image-storage';
@@ -133,110 +125,109 @@ export default function RecognizeContent() {
 
   if (loading) {
     return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
+      <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
         <div className='text-center'>
-          <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-          <h2 className='mb-2 text-xl font-semibold'>Analyzing your image</h2>
-          <p className='text-muted-foreground'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
+          <div className='mx-auto mb-6'>
+            <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+          </div>
+          <h2 className='pixel-text mb-3 text-xl text-[#5d4037]'>Analyzing your image</h2>
+          <p className='text-[#5d4037]/70'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
         </div>
       </div>
     );
   }
 
   return (
-    <main className='bg-background min-h-screen pb-24'>
+    <main className='min-h-screen bg-[#fafafa] pb-24'>
       <div className='container mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8'>
-        <Button
-          variant='ghost'
+        <PixelButton
+          variant='secondary'
+          size='regular'
           onClick={() => router.push('/upload')}
-          className='mb-4 sm:mb-6'
-          size='sm'
+          className='mb-4 inline-flex items-center gap-2 sm:mb-6'
         >
-          <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-          뒤로 가기
-        </Button>
+          <ArrowLeft className='h-4 w-4' />
+          <span className='pixel-text text-xs'>뒤로 가기</span>
+        </PixelButton>
 
         {error && (
-          <Alert variant='destructive' className='mb-6'>
-            <AlertCircle className='h-4 w-4' />
-            <AlertTitle>오류 발생</AlertTitle>
-            <AlertDescription className='mt-2 flex flex-col gap-3'>
-              <p>{error}</p>
-              <Button variant='outline' size='sm' onClick={() => router.push('/upload')}>
-                다시 시도
-              </Button>
-            </AlertDescription>
-          </Alert>
+          <div className='mb-6'>
+            <PixelAlert
+              title='오류 발생'
+              description={error}
+              onAction={() => router.push('/upload')}
+              actionLabel='다시 시도'
+            />
+          </div>
         )}
 
         <div className='mb-8 sm:mb-10'>
-          <h1 className='text-foreground mb-2 text-3xl font-bold sm:mb-3 sm:text-4xl'>
-            레시피 맞춤 설정
-          </h1>
-          <p className='text-muted-foreground text-sm sm:text-base'>
+          <h1 className='pixel-text mb-3 text-2xl text-[#5d4037] sm:text-3xl'>레시피 맞춤 설정</h1>
+          <p className='text-base text-[#5d4037]/70 sm:text-lg'>
             재료를 선택하고 원하는 스타일을 고르면 더 정확한 레시피를 추천해드려요!
           </p>
         </div>
 
         {/* 재료 선택 섹션 */}
         <div className='mb-12'>
-          <div className='mb-6 flex items-center gap-2 border-b pb-3'>
-            <UtensilsCrossed className='text-primary h-6 w-6' />
-            <h2 className='text-2xl font-bold'>인식된 재료</h2>
-            <span className='text-muted-foreground text-sm'>
-              ({selectedIngredients.size}개 선택됨)
-            </span>
+          <div className='mb-6 flex items-center gap-3 border-b-4 border-[#5d4037] pb-3'>
+            <UtensilsCrossed className='h-6 w-6 text-[#5d4037]' />
+            <h2 className='pixel-text text-base text-[#5d4037]'>인식된 재료</h2>
+            <span className='text-sm text-[#5d4037]/70'>({selectedIngredients.size}개 선택됨)</span>
           </div>
 
           <div className='mb-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2'>
             <div>
-              <Card className='mb-3 overflow-hidden py-0 sm:mb-4'>
+              <PixelCard className='mb-3 overflow-hidden p-0 sm:mb-4'>
                 <div className='relative h-64 w-full sm:h-80'>
                   <Image
                     src={imageData || '/placeholder.svg'}
                     alt='Uploaded ingredients'
                     fill
-                    className='object-cover'
+                    className='pixelated object-cover'
+                    style={{ imageRendering: 'pixelated' }}
                     unoptimized
                   />
                 </div>
-              </Card>
-              <p className='text-muted-foreground text-center text-xs sm:text-sm'>업로드한 사진</p>
+              </PixelCard>
+              <p className='text-center text-xs text-[#5d4037]/70 sm:text-sm'>업로드한 사진</p>
             </div>
 
-            <div className='space-y-2 sm:space-y-3'>
+            <div>
               <div className='mb-3 flex items-center justify-between sm:mb-4'>
-                <h3 className='text-lg font-semibold sm:text-xl'>
+                <h3 className='text-lg font-semibold text-[#5d4037] sm:text-xl'>
                   {ingredients.length}개 재료 발견
                 </h3>
               </div>
 
-              {ingredients.map((ingredient) => (
-                <IngredientCard
-                  key={ingredient.name}
-                  name={ingredient.name}
-                  confidence={ingredient.confidence}
-                  category={ingredient.category}
-                  selected={selectedIngredients.has(ingredient.name)}
-                  onToggle={() => toggleIngredient(ingredient.name)}
-                />
-              ))}
+              <div className='max-h-[500px] space-y-2 overflow-y-auto pr-2 sm:space-y-3'>
+                {ingredients.map((ingredient) => (
+                  <IngredientCard
+                    key={ingredient.name}
+                    name={ingredient.name}
+                    confidence={ingredient.confidence}
+                    category={ingredient.category}
+                    selected={selectedIngredients.has(ingredient.name)}
+                    onToggle={() => toggleIngredient(ingredient.name)}
+                  />
+                ))}
 
-              {ingredients.length === 0 && (
-                <Card className='p-8 text-center'>
-                  <p className='text-muted-foreground'>재료를 인식하지 못했습니다.</p>
-                </Card>
-              )}
+                {ingredients.length === 0 && (
+                  <PixelCard className='p-8 text-center'>
+                    <p className='text-[#5d4037]/70'>재료를 인식하지 못했습니다.</p>
+                  </PixelCard>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* 레시피 스타일 섹션 */}
         <div className='mb-12'>
-          <div className='mb-6 flex items-center gap-2 border-b pb-3'>
-            <Flame className='text-primary h-6 w-6' />
-            <h2 className='text-2xl font-bold'>레시피 스타일</h2>
-            <span className='text-muted-foreground text-sm'>(하나만 선택)</span>
+          <div className='mb-6 flex items-center gap-3 border-b-4 border-[#5d4037] pb-3'>
+            <Flame className='h-6 w-6 text-[#5d4037]' />
+            <h2 className='pixel-text text-base text-[#5d4037]'>레시피 스타일</h2>
+            <span className='text-sm text-[#5d4037]/70'>(하나만 선택)</span>
           </div>
 
           <div className='space-y-8'>
@@ -245,8 +236,8 @@ export default function RecognizeContent() {
               return (
                 <div key={category.id}>
                   <div className='mb-4'>
-                    <h3 className='text-lg font-bold'>{category.title}</h3>
-                    <p className='text-muted-foreground text-sm'>{category.description}</p>
+                    <h3 className='text-lg font-bold text-[#5d4037]'>{category.title}</h3>
+                    <p className='text-sm text-[#5d4037]/70'>{category.description}</p>
                   </div>
                   <div className='grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3'>
                     {themes.map((theme) => (
@@ -266,10 +257,10 @@ export default function RecognizeContent() {
 
         {/* 음식 국적 섹션 */}
         <div className='mb-12'>
-          <div className='mb-6 flex items-center gap-2 border-b pb-3'>
-            <ChefHat className='text-primary h-6 w-6' />
-            <h2 className='text-2xl font-bold'>음식 국적</h2>
-            <span className='text-muted-foreground text-sm'>(하나만 선택)</span>
+          <div className='mb-6 flex items-center gap-3 border-b-4 border-[#5d4037] pb-3'>
+            <ChefHat className='h-6 w-6 text-[#5d4037]' />
+            <h2 className='pixel-text text-base text-[#5d4037]'>음식 국적</h2>
+            <span className='text-sm text-[#5d4037]/70'>(하나만 선택)</span>
           </div>
 
           <div className='grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3'>
@@ -286,10 +277,10 @@ export default function RecognizeContent() {
 
         {/* 조리 도구 섹션 */}
         <div className='mb-12'>
-          <div className='mb-6 flex items-center gap-2 border-b pb-3'>
-            <Utensils className='text-primary h-6 w-6' />
-            <h2 className='text-2xl font-bold'>조리 도구</h2>
-            <span className='text-muted-foreground text-sm'>(여러 개 선택 가능)</span>
+          <div className='mb-6 flex items-center gap-3 border-b-4 border-[#5d4037] pb-3'>
+            <Utensils className='h-6 w-6 text-[#5d4037]' />
+            <h2 className='pixel-text text-base text-[#5d4037]'>조리 도구</h2>
+            <span className='text-sm text-[#5d4037]/70'>(여러 개 선택 가능)</span>
           </div>
 
           <div className='grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3'>
@@ -305,18 +296,21 @@ export default function RecognizeContent() {
         </div>
 
         {/* 하단 고정 버튼 */}
-        <div className='bg-background/95 border-border fixed right-0 bottom-0 left-0 border-t backdrop-blur-sm'>
+        <div className='fixed right-0 bottom-0 left-0 border-t-4 border-[#5d4037] bg-[#ffe0e0]'>
           <div className='container mx-auto max-w-6xl px-4 py-4 sm:px-6'>
             <div className='flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4'>
-              <Button
-                size='lg'
+              <PixelButton
+                size='large'
+                variant='primary'
                 onClick={handleContinue}
                 disabled={selectedIngredients.size === 0}
-                className='gap-2'
+                className='inline-flex items-center gap-3'
               >
-                레시피 찾기 ({selectedIngredients.size}개 재료)
+                <span className='pixel-text text-xs'>
+                  레시피 찾기 ({selectedIngredients.size}개 재료)
+                </span>
                 <ArrowRight className='h-5 w-5' />
-              </Button>
+              </PixelButton>
             </div>
           </div>
         </div>
