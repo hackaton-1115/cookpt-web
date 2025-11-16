@@ -7,9 +7,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { toggleRecipeLike } from '@/lib/recipe-likes';
 import { createClient } from '@/lib/supabase/client';
 import { Recipe } from '@/lib/types';
@@ -20,10 +17,10 @@ interface RecipeCardProps {
   initialLiked?: boolean;
 }
 
-const difficultyColor = {
-  easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-  hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
+const difficultyLabels = {
+  easy: '쉬움',
+  medium: '보통',
+  hard: '어려움',
 };
 
 export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: RecipeCardProps) {
@@ -87,81 +84,88 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
 
   return (
     <Link href={`/recipes/${recipe.id}`}>
-      <Card className='group h-full cursor-pointer gap-y-0 overflow-hidden py-0 transition-shadow hover:shadow-lg'>
-        <div className='relative h-40 overflow-hidden sm:h-48'>
+      <div className='cursor-pointer border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'>
+        {/* 이미지 영역 */}
+        <div className='relative h-48 overflow-hidden border-b-4 border-[#5d4037]'>
           <Image
             src={recipe.image || '/placeholder.svg'}
             alt={recipe.title}
             fill
-            className='object-cover transition-transform duration-300 group-hover:scale-105'
+            className='object-cover'
+            style={{ imageRendering: 'pixelated' }}
           />
+
+          {/* 매치 퍼센트 배지 */}
           {matchPercentage !== undefined && matchPercentage > 0 && (
-            <div className='bg-primary text-primary-foreground absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs font-semibold sm:top-3 sm:right-3 sm:px-3 sm:py-1 sm:text-sm'>
-              {Math.round(matchPercentage)}% match
+            <div className='pixel-text absolute top-2 right-2 border-2 border-[#5d4037] bg-[#ff5252] px-3 py-1 text-xs text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+              {Math.round(matchPercentage)}%
             </div>
           )}
-          <Badge
-            className={`absolute top-2 left-2 text-xs sm:top-3 sm:left-3 ${
-              difficultyColor[recipe.difficulty]
-            }`}
-          >
-            {recipe.difficulty}
-          </Badge>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='absolute right-2 bottom-2 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white sm:h-9 sm:w-9'
-            onClick={handleLikeClick}
-            disabled={isLiking}
-          >
-            <Heart
-              className={`h-4 w-4 transition-all sm:h-5 sm:w-5 ${
-                liked ? 'fill-red-500 text-red-500' : 'text-gray-600'
-              }`}
-            />
-          </Button>
+
+          {/* 난이도 배지 */}
+          <div className='absolute top-2 left-2 border-2 border-[#5d4037] bg-[#ffe0e0] px-2 py-1 text-xs text-[#5d4037]'>
+            {difficultyLabels[recipe.difficulty]}
+          </div>
+
+          {/* 좋아요 버튼 */}
+          {isLoggedIn && (
+            <button
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              className='absolute right-2 bottom-2 flex h-9 w-9 items-center justify-center border-2 border-[#5d4037] bg-white/90 shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+            >
+              <Heart
+                className={`h-5 w-5 transition-all ${
+                  liked ? 'fill-[#ff5252] text-[#ff5252]' : 'text-[#5d4037]'
+                }`}
+              />
+            </button>
+          )}
         </div>
 
-        <CardContent className='p-3 sm:p-4'>
-          <h3 className='group-hover:text-primary mb-1 line-clamp-1 text-base font-bold transition-colors sm:mb-2 sm:text-lg'>
-            {recipe.title}
-          </h3>
-          <p className='text-muted-foreground mb-2 line-clamp-2 text-xs sm:mb-3 sm:text-sm'>
-            {recipe.description}
-          </p>
+        {/* 콘텐츠 영역 */}
+        <div className='p-4'>
+          {/* 타이틀 */}
+          <h3 className='pixel-text mb-3 line-clamp-2 text-xs text-[#5d4037]'>{recipe.title}</h3>
 
-          <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs sm:gap-4 sm:text-sm'>
+          {/* 설명 */}
+          <p className='mb-3 line-clamp-2 text-sm text-[#5d4037]/70'>{recipe.description}</p>
+
+          {/* 메타 정보 */}
+          <div className='mb-3 flex flex-wrap items-center gap-4 text-sm text-[#5d4037]/70'>
             <div className='flex items-center gap-1'>
-              <Clock className='h-3 w-3 sm:h-4 sm:w-4' />
-              <span>{totalTime} min</span>
+              <Clock className='h-4 w-4' />
+              <span>{totalTime}분</span>
             </div>
             <div className='flex items-center gap-1'>
-              <Users className='h-3 w-3 sm:h-4 sm:w-4' />
-              <span>{recipe.servings}</span>
+              <Users className='h-4 w-4' />
+              <span>{recipe.servings}인분</span>
             </div>
             <div className='flex items-center gap-1'>
-              <ChefHat className='h-3 w-3 sm:h-4 sm:w-4' />
+              <ChefHat className='h-4 w-4' />
               <span className='truncate'>{recipe.category}</span>
             </div>
             {likesCount > 0 && (
               <div className='flex items-center gap-1'>
-                <Heart className='h-3 w-3 fill-red-500 text-red-500 sm:h-4 sm:w-4' />
+                <Heart className='h-4 w-4 fill-[#ff5252] text-[#ff5252]' />
                 <span>{likesCount}</span>
               </div>
             )}
           </div>
-        </CardContent>
 
-        <CardFooter className='p-3 pt-0 sm:p-4'>
+          {/* 태그 */}
           <div className='flex flex-wrap gap-2'>
             {recipe.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant='secondary' className='text-xs'>
+              <div
+                key={tag}
+                className='border-2 border-[#5d4037] bg-[#ffe0e0] px-2 py-1 text-xs text-[#5d4037]'
+              >
                 {tag}
-              </Badge>
+              </div>
             ))}
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

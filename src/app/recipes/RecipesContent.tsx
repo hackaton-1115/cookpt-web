@@ -1,13 +1,12 @@
 'use client';
 
-import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ChefHat } from 'lucide-react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { RecipeCard } from '@/components/RecipeCard';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { PixelIconBox } from '@/components/ui/pixel-icon-box';
 import { generateRecipes } from '@/lib/edge-functions';
 import { checkMultipleRecipesLiked } from '@/lib/recipe-likes';
 import { GenerateRecipesRequest, Recipe } from '@/lib/types';
@@ -95,63 +94,95 @@ export default function RecipesContent() {
   const ingredients = ingredientsParam ? ingredientsParam.split(',').map((i) => i.trim()) : [];
 
   return loading ? (
-    <div className='bg-background flex min-h-screen items-center justify-center'>
+    <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
       <div className='text-center'>
-        <Loader2 className='text-primary mx-auto mb-4 h-12 w-12 animate-spin' />
-        <h2 className='mb-2 text-xl font-semibold'>레시피 생성 중...</h2>
-        <p className='text-muted-foreground'>AI가 맞춤 레시피를 만들고 있습니다 (약 30초 소요)</p>
+        {/* 픽셀 로더 박스 */}
+        <div className='mx-auto mb-6 flex items-center justify-center'>
+          <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
+        </div>
+
+        <h2 className='pixel-text mb-3 text-sm text-[#5d4037]'>레시피 생성 중...</h2>
+        <p className='mx-auto max-w-md text-sm text-[#5d4037]/70'>
+          AI가 맞춤 레시피를 만들고 있습니다 (약 30초 소요)
+        </p>
       </div>
     </div>
   ) : (
-    <main className='bg-background min-h-screen'>
-      <div className='container mx-auto px-4 py-6 sm:px-6 sm:py-8'>
-        {/* 헤더 */}
-        <div className='mb-4 flex items-center justify-between sm:mb-6'>
-          <Button
-            variant='ghost'
-            onClick={() => router.push('/recognize')}
-            size='sm'
-            className='sm:size-default'
-          >
-            <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-            Back
-          </Button>
-        </div>
+    <div className='min-h-screen bg-[#fafafa]'>
+      {/* 픽셀 데코레이션 */}
+      <div className='pixel-rotate fixed top-20 left-10 h-8 w-8 bg-[#5d4037] opacity-20' />
+      <div className='pixel-rotate fixed top-40 right-20 h-6 w-6 bg-[#5d4037] opacity-20' />
+      <div className='pixel-rotate fixed bottom-20 left-1/4 h-4 w-4 bg-[#5d4037] opacity-20' />
+      <div className='pixel-rotate fixed right-1/3 bottom-40 h-5 w-5 bg-[#5d4037] opacity-20' />
 
+      {/* 헤더 */}
+      <div className='sticky top-0 z-50 border-b-4 border-[#5d4037] bg-[#ffe0e0] p-6'>
+        <div className='mx-auto max-w-7xl'>
+          {/* 백 버튼 */}
+          <button
+            onClick={() => router.push('/recognize')}
+            className='mb-4 flex cursor-pointer items-center gap-2 border-2 border-[#5d4037] bg-white px-4 py-2 text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+          >
+            <ArrowLeft className='h-5 w-5' />
+            <span className='text-sm'>돌아가기</span>
+          </button>
+
+          {/* 타이틀 & 카운터 */}
+          <div className='flex items-center justify-between'>
+            <div>
+              <h1 className='pixel-text mb-2 text-xl text-[#5d4037]'>AI 맞춤 레시피 추천</h1>
+              {ingredients.length > 0 && (
+                <p className='text-sm text-[#5d4037]/70'>재료: {ingredients.join(', ')}</p>
+              )}
+            </div>
+
+            {!error && recipes.length > 0 && (
+              <div className='pixel-text border-2 border-[#5d4037] bg-[#ff5252] px-4 py-2 text-xs text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                총 {recipes.length}개
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 메인 콘텐츠 */}
+      <main className='mx-auto max-w-7xl p-6'>
         {/* 에러 상태 */}
         {error && (
-          <Alert variant='destructive' className='mb-6'>
-            <AlertCircle className='h-4 w-4' />
-            <AlertTitle>레시피 생성 실패</AlertTitle>
-            <AlertDescription className='mt-2 flex flex-col gap-3'>
-              <p>{error}</p>
-              <div className='flex gap-2'>
-                <Button variant='outline' size='sm' onClick={() => router.push('/recognize')}>
-                  조건 다시 설정
-                </Button>
-                <Button variant='outline' size='sm' onClick={() => window.location.reload()}>
-                  다시 시도
-                </Button>
+          <div className='mb-6 border-4 border-[#5d4037] bg-[#ffe0e0] p-6 shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+            <div className='flex items-start gap-4'>
+              {/* 에러 아이콘 박스 */}
+              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+                <AlertCircle className='h-6 w-6 text-white' />
               </div>
-            </AlertDescription>
-          </Alert>
-        )}
 
-        {/* 타이틀 섹션 */}
-        <div className='mb-6 sm:mb-8'>
-          <h1 className='text-foreground mb-2 text-2xl font-bold sm:mb-3 sm:text-3xl'>
-            AI 맞춤 레시피 추천
-          </h1>
-          {ingredients.length > 0 && (
-            <p className='text-muted-foreground text-sm sm:text-base'>
-              재료: {ingredients.join(', ')}
-            </p>
-          )}
-        </div>
+              <div className='flex-1'>
+                <h3 className='pixel-text mb-3 text-xs text-[#5d4037]'>레시피 생성 실패</h3>
+                <p className='mb-4 text-sm text-[#5d4037]/70'>{error}</p>
+
+                <div className='flex flex-wrap gap-3'>
+                  <button
+                    onClick={() => router.push('/recognize')}
+                    className='border-2 border-[#5d4037] bg-white px-4 py-2 text-sm text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+                  >
+                    조건 다시 설정
+                  </button>
+
+                  <button
+                    onClick={() => window.location.reload()}
+                    className='pixel-button border-2 border-[#5d4037] bg-[#ff5252] px-4 py-2 text-sm text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+                  >
+                    다시 시도
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 레시피 그리드 */}
         {!error && recipes.length > 0 && (
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'>
+          <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
             {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} initialLiked={likedRecipes[recipe.id]} />
             ))}
@@ -160,14 +191,34 @@ export default function RecipesContent() {
 
         {/* 레시피 없음 */}
         {!error && recipes.length === 0 && (
-          <div className='py-12 text-center'>
-            <p className='text-muted-foreground text-lg'>생성된 레시피가 없습니다.</p>
-            <Button variant='outline' onClick={() => router.push('/recognize')} className='mt-4'>
-              재료 선택으로 돌아가기
-            </Button>
+          <div className='py-16 text-center'>
+            {/* 아이콘 박스 */}
+            <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center border-4 border-[#5d4037] bg-[#ffe0e0] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+              <ChefHat className='h-12 w-12 text-[#5d4037]/50' />
+            </div>
+
+            <h3 className='pixel-text mb-3 text-sm text-[#5d4037]'>아직 레시피가 없습니다</h3>
+            <p className='mx-auto mb-6 max-w-md text-sm text-[#5d4037]/60'>
+              재료를 다시 선택하고 첫 번째 레시피를 생성해보세요!
+            </p>
+
+            <button
+              onClick={() => router.push('/recognize')}
+              className='pixel-button inline-flex items-center gap-2 border-4 border-[#5d4037] bg-[#ff5252] px-6 py-3 text-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'
+            >
+              <ArrowLeft className='h-5 w-5' />
+              <span className='pixel-text text-xs'>재료 선택으로 돌아가기</span>
+            </button>
           </div>
         )}
-      </div>
-    </main>
+      </main>
+
+      {/* 푸터 */}
+      <footer className='mt-12 border-t-4 border-[#5d4037] bg-[#ffe0e0] py-6'>
+        <div className='mx-auto max-w-7xl px-6 text-center text-sm text-[#5d4037]/70'>
+          <p>© 2025 CookPT • AI 기반 맞춤 레시피</p>
+        </div>
+      </footer>
+    </div>
   );
 }

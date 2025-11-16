@@ -127,10 +127,10 @@ export default function RecognizeContent() {
     return (
       <div className='flex min-h-screen items-center justify-center bg-[#fafafa]'>
         <div className='text-center'>
-          <div className='mx-auto mb-6'>
+          <div className='mx-auto mb-6 flex items-center justify-center'>
             <PixelIconBox icon={ChefHat} variant='primary' size='large' className='pixel-rotate' />
           </div>
-          <h2 className='pixel-text mb-3 text-xl text-[#5d4037]'>Analyzing your image</h2>
+          <h2 className='pixel-text mb-3 text-xl text-[#5d4037]'>이미지 분석 중</h2>
           <p className='text-[#5d4037]/70'>AI가 사진을 분석하고 있습니다... (약 10초 소요)</p>
         </div>
       </div>
