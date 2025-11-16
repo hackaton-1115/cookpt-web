@@ -269,7 +269,7 @@ export const POST = async (req: NextRequest) => {
     try {
       const jsonText = recipeText.replace(/```json\n?|```/g, '').trim();
       recipes = JSON.parse(jsonText) as AIGeneratedRecipe[];
-    } catch (parseError) {
+    } catch {
       console.error('Failed to parse recipe JSON:', recipeText);
       return NextResponse.json(
         {

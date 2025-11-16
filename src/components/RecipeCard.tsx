@@ -33,8 +33,6 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
   const [isLiking, setIsLiking] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  const router = useRouter();
-
   const totalTime = recipe.prepTime + recipe.cookTime;
 
   // 로그인 상태 확인
