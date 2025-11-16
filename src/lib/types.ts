@@ -16,7 +16,7 @@ export interface Recipe {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image: string | null;
   prepTime: number;
   cookTime: number;
   servings: number;

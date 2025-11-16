@@ -1,5 +1,5 @@
+import { GoogleGenAI } from '@google/genai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-// import { GoogleGenAI } from '@google/genai'; // 개발 중 이미지 생성 비활성화
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -33,7 +33,7 @@ interface SavedRecipeResponse {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image: string | null;
   prepTime: number;
   cookTime: number; // cookingTime 대신 cookTime 사용
   servings: number;
@@ -246,10 +246,10 @@ export const POST = async (req: NextRequest) => {
       model: 'gemini-2.0-flash-exp',
     });
 
-    // Imagen API (개발 중에는 비활성화)
-    // const imageAI = new GoogleGenAI({
-    //   apiKey: geminiApiKey,
-    // });
+    // Imagen API
+    const imageAI = new GoogleGenAI({
+      apiKey: geminiApiKey,
+    });
 
     // 1. 동적 프롬프트 생성
     const recipePrompt = buildRecipePrompt({ ingredients, theme, cuisine, tools });
@@ -314,78 +314,81 @@ export const POST = async (req: NextRequest) => {
       const randomSuffix = Math.random().toString(36).substring(2, 8);
       const recipeId = `${recipe.title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-')}-${timestamp}-${randomSuffix}`;
 
-      // 개발 중에는 placeholder 이미지만 사용
-      const imageUrl = '/placeholder-recipe.jpg';
-      console.log(`Using placeholder image for: ${recipe.title}`);
+      let imageUrl = null;
 
-      // TODO: 프로덕션에서는 이미지 생성 활성화
-      // try {
-      //   console.log(`Generating image for: ${recipe.title}`);
-      //
-      //   const cuisineNames: Record<string, string> = {
-      //     korean: 'Korean',
-      //     japanese: 'Japanese',
-      //     chinese: 'Chinese',
-      //     western: 'Western',
-      //     thai: 'Thai',
-      //     vietnamese: 'Vietnamese',
-      //   };
-      //   const cuisineName = cuisine ? cuisineNames[cuisine] || 'Korean' : 'Korean';
-      //   const imagePrompt = `A professional, appetizing photo of ${cuisineName} food dish: ${recipe.title}. ${recipe.description}. The dish should be beautifully plated on a traditional dish, with natural lighting, high quality food photography style, realistic, delicious looking.`;
-      //
-      //   const imageResponse = await imageAI.models.generateImages({
-      //     model: 'imagen-4.0-generate-001',
-      //     prompt: imagePrompt,
-      //     config: {
-      //       numberOfImages: 1,
-      //     },
-      //   });
-      //
-      //   console.log('Image generated successfully');
-      //
-      //   if (imageResponse.generatedImages && imageResponse.generatedImages.length > 0) {
-      //     const firstImage = imageResponse.generatedImages[0];
-      //     if (firstImage?.image?.imageBytes) {
-      //       const imageBytes = firstImage.image.imageBytes;
-      //       const binaryString = atob(imageBytes);
-      //       const bytes = new Uint8Array(binaryString.length);
-      //       for (let i = 0; i < binaryString.length; i++) {
-      //         bytes[i] = binaryString.charCodeAt(i);
-      //       }
-      //
-      //       const { error: uploadError } = await supabase.storage
-      //         .from('recipe-images')
-      //         .upload(storageFileName, bytes, {
-      //           contentType: 'image/png',
-      //           upsert: false,
-      //         });
-      //
-      //       if (!uploadError) {
-      //         const {
-      //           data: { publicUrl },
-      //         } = supabase.storage.from('recipe-images').getPublicUrl(storageFileName);
-      //         imageUrl = publicUrl;
-      //         console.log('Image uploaded successfully:', imageUrl);
-      //       } else {
-      //         console.error('Image upload error:', uploadError);
-      //         imageErrors.push({
-      //           recipe: recipe.title,
-      //           error: 'Upload failed: ' + uploadError.message,
-      //         });
-      //       }
-      //     } else {
-      //       imageErrors.push({ recipe: recipe.title, error: 'No image bytes' });
-      //     }
-      //   } else {
-      //     imageErrors.push({ recipe: recipe.title, error: 'No generated images' });
-      //   }
-      // } catch (imageError) {
-      //   console.error('Image generation error for', recipe.title, ':', imageError);
-      //   imageErrors.push({
-      //     recipe: recipe.title,
-      //     error: imageError instanceof Error ? imageError.message : 'Unknown error',
-      //   });
-      // }
+      // 이미지 생성 시도
+      try {
+        console.log(`Generating image for: ${recipe.title}`);
+
+        const cuisineNames: Record<string, string> = {
+          korean: 'Korean',
+          japanese: 'Japanese',
+          chinese: 'Chinese',
+          western: 'Western',
+          thai: 'Thai',
+          vietnamese: 'Vietnamese',
+        };
+        const cuisineName = cuisine ? cuisineNames[cuisine] || 'Korean' : 'Korean';
+        const imagePrompt = `A professional, appetizing photo of ${cuisineName} food dish: ${recipe.title}. ${recipe.description}. The dish should be beautifully plated on a traditional dish, with natural lighting, high quality food photography style, realistic, delicious looking.`;
+
+        const imageResponse = await imageAI.models.generateImages({
+          model: 'imagen-3.0-generate-001',
+          prompt: imagePrompt,
+          config: {
+            numberOfImages: 1,
+          },
+        });
+
+        console.log('Image generated successfully');
+
+        if (imageResponse.generatedImages && imageResponse.generatedImages.length > 0) {
+          const firstImage = imageResponse.generatedImages[0];
+          if (firstImage?.image?.imageBytes) {
+            const imageBytes = firstImage.image.imageBytes;
+            const binaryString = atob(imageBytes);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            const storageFileName = `${recipeId}.png`;
+            const { error: uploadError } = await supabase.storage
+              .from('recipe-images')
+              .upload(storageFileName, bytes, {
+                contentType: 'image/png',
+                upsert: false,
+              });
+
+            if (!uploadError) {
+              const {
+                data: { publicUrl },
+              } = supabase.storage.from('recipe-images').getPublicUrl(storageFileName);
+              imageUrl = publicUrl;
+              console.log('Image uploaded successfully:', imageUrl);
+            } else {
+              console.error('Image upload error:', uploadError);
+              console.log(`Using placeholder for ${recipe.title} due to upload error`);
+              imageErrors.push({
+                recipe: recipe.title,
+                error: 'Upload failed: ' + uploadError.message,
+              });
+            }
+          } else {
+            console.log(`Using placeholder for ${recipe.title} - No image bytes`);
+            imageErrors.push({ recipe: recipe.title, error: 'No image bytes' });
+          }
+        } else {
+          console.log(`Using placeholder for ${recipe.title} - No generated images`);
+          imageErrors.push({ recipe: recipe.title, error: 'No generated images' });
+        }
+      } catch (imageError) {
+        console.error('Image generation error for', recipe.title, ':', imageError);
+        console.log(`Using placeholder for ${recipe.title} due to generation error`);
+        imageErrors.push({
+          recipe: recipe.title,
+          error: imageError instanceof Error ? imageError.message : 'Unknown error',
+        });
+      }
 
       // 4. Supabase DB에 레시피 저장
       try {

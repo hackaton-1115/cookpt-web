@@ -26,6 +26,7 @@ export default function RecipeDetailPage() {
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isLiking, setIsLiking] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<boolean>(false);
 
   const params = useParams();
   const router = useRouter();
@@ -132,15 +133,25 @@ export default function RecipeDetailPage() {
         <div className='mb-8 border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
           {/* 이미지 */}
           <div className='relative h-96 border-b-4 border-[#5d4037]'>
-            <Image
-              src={recipe.image || '/placeholder.svg'}
-              alt={recipe.title}
-              fill
-              className='object-cover'
-              style={{ imageRendering: 'pixelated' }}
-            />
+            {recipe.image &&
+            recipe.image.trim() !== '' &&
+            !recipe.image.includes('/placeholder') &&
+            !imageError ? (
+              <Image
+                src={recipe.image}
+                alt={recipe.title}
+                fill
+                className='object-cover'
+                style={{ imageRendering: 'pixelated' }}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className='flex h-full w-full items-center justify-center bg-[#ff5252]'>
+                <ChefHat className='h-24 w-24 text-white' strokeWidth={2} />
+              </div>
+            )}
             {/* 카테고리 배지 */}
-            <div className='absolute top-4 right-4 border-2 border-[#5d4037] bg-[#ff5252] px-4 py-2 text-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
+            <div className='absolute top-4 right-4 border-2 border-[#5d4037] bg-white px-4 py-2 text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
               <span className='pixel-text text-xs'>{recipe.category}</span>
             </div>
           </div>
@@ -237,7 +248,7 @@ export default function RecipeDetailPage() {
               <ol className='space-y-4'>
                 {recipe.instructions.map((instruction, index) => (
                   <li key={index} className='flex gap-4'>
-                    <span className='flex h-8 w-8 flex-shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] text-white'>
+                    <span className='flex h-8 w-8 shrink-0 items-center justify-center border-2 border-[#5d4037] bg-[#ff5252] text-white'>
                       <span className='pixel-text text-xs'>{index + 1}</span>
                     </span>
                     <p className='flex-1 pt-1 text-sm text-[#5d4037]'>{instruction}</p>

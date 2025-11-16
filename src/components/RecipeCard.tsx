@@ -86,13 +86,19 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
       <div className='cursor-pointer border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-2 hover:translate-y-2 hover:shadow-none'>
         {/* 이미지 영역 */}
         <div className='relative h-48 overflow-hidden border-b-4 border-[#5d4037]'>
-          <Image
-            src={recipe.image || '/placeholder.svg'}
-            alt={recipe.title}
-            fill
-            className='object-cover'
-            style={{ imageRendering: 'pixelated' }}
-          />
+          {recipe.image && recipe.image.trim() !== '' && !recipe.image.includes('/placeholder') ? (
+            <Image
+              src={recipe.image}
+              alt={recipe.title}
+              fill
+              className='object-cover'
+              style={{ imageRendering: 'pixelated' }}
+            />
+          ) : (
+            <div className='flex h-full w-full items-center justify-center bg-[#ff5252]'>
+              <ChefHat className='h-16 w-16 text-white' strokeWidth={2} />
+            </div>
+          )}
 
           {/* 매치 퍼센트 배지 */}
           {matchPercentage !== undefined && matchPercentage > 0 && (
