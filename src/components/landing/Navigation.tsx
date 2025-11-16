@@ -130,7 +130,7 @@ export function Navigation() {
 
                   {/* 픽셀 드롭다운 메뉴 */}
                   {dropdownOpen && (
-                    <div className='absolute top-full right-0 mt-2 w-48 border-4 border-[#5d4037] bg-white shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]'>
+                    <div className='absolute top-full right-0 mt-2 w-48 border-4 border-[#5d4037] bg-white shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]'>
                       <div className='border-b-2 border-[#5d4037] px-4 py-3'>
                         <p className='pixel-text text-xs text-[#5d4037]'>내 계정</p>
                       </div>
@@ -234,12 +234,12 @@ export function Navigation() {
                       </button>
                     </Link>
                     <Link href='/upload' onClick={() => setMobileMenuOpen(false)}>
-                      <PixelButton variant='primary' className='w-full whitespace-nowrap'>
+                      <button className='mb-2 w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'>
                         앱 시작하기
-                      </PixelButton>
+                      </button>
                     </Link>
                     <button
-                      className='mt-2 w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+                      className='w-full border-2 border-[#5d4037] bg-white px-4 py-3 text-left text-sm text-[#ff5252] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
                       onClick={() => {
                         handleLogout();
                         setMobileMenuOpen(false);
