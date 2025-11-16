@@ -90,7 +90,7 @@ export default function MyPage() {
   if (needsLogin) {
     return (
       <main className='min-h-screen bg-[#fafafa] py-8'>
-        <div className='container mx-auto px-4'>
+        <div className='container mx-auto max-w-4xl px-4 sm:px-6'>
           {/* 페이지 헤더 */}
           <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
             <div className='mb-3 flex items-center gap-3'>
@@ -114,7 +114,7 @@ export default function MyPage() {
 
   return (
     <main className='min-h-screen bg-[#fafafa] py-8'>
-      <div className='container mx-auto px-4'>
+      <div className='container mx-auto max-w-4xl px-4 sm:px-6'>
         {/* 페이지 헤더 */}
         <div className='mb-8 border-b-4 border-[#5d4037] pb-6'>
           <div className='mb-3 flex items-center gap-3'>
