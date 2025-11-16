@@ -5,6 +5,7 @@ import { ChefHat, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoginRequired } from '@/components/LoginRequired';
 import { RecipeCard } from '@/components/RecipeCard';
 import { Button } from '@/components/ui/button';
 import { useLogin } from '@/hooks/useLogin';
@@ -30,10 +31,9 @@ export default function MyRecipesPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        // 로그인하지 않은 경우 로그인 요청
+        // 로그인하지 않은 경우 로그인 필요 상태로 설정
         setNeedsLogin(true);
         setLoading(false);
-        requestLogin();
         return;
       }
 
@@ -71,15 +71,23 @@ export default function MyRecipesPage() {
 
   if (needsLogin) {
     return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
-        <div className='text-center'>
-          <ChefHat className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
-          <h2 className='mb-2 text-xl font-semibold'>로그인이 필요합니다</h2>
-          <p className='text-muted-foreground mb-4'>내 레시피를 보려면 로그인해주세요</p>
-          <Button onClick={requestLogin}>로그인하기</Button>
+      <main className='bg-background min-h-screen py-8'>
+        <div className='container mx-auto px-4'>
+          <div className='mb-8'>
+            <div className='mb-2 flex items-center gap-2'>
+              <ChefHat className='text-primary h-8 w-8' />
+              <h1 className='text-foreground text-3xl font-bold'>내 레시피</h1>
+            </div>
+            <p className='text-muted-foreground'>내가 만든 레시피를 확인하세요</p>
+          </div>
+          <LoginRequired
+            icon={ChefHat}
+            message='내 레시피를 보려면 로그인해주세요'
+            onLoginClick={requestLogin}
+          />
         </div>
         <LoginDialogComponent />
-      </div>
+      </main>
     );
   }
 

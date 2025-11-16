@@ -15,8 +15,7 @@ export const loadGeneratedRecipes = async (): Promise<Recipe[]> => {
     const { data: recipes, error } = await supabase
       .from('recipes')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10);
+      .order('created_at', { ascending: false });
 
     if (error || !recipes) {
       console.error('레시피 불러오기 실패:', error);

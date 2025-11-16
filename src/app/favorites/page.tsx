@@ -5,6 +5,7 @@ import { Heart, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoginRequired } from '@/components/LoginRequired';
 import { RecipeCard } from '@/components/RecipeCard';
 import { Button } from '@/components/ui/button';
 import { useLogin } from '@/hooks/useLogin';
@@ -72,19 +73,21 @@ export default function FavoritesPage() {
         </div>
 
         {recipes.length === 0 ? (
-          <div className='text-center py-12'>
-            <Heart className='text-muted-foreground mx-auto mb-4 h-16 w-16' />
-            <p className='text-muted-foreground mb-4 text-lg'>
-              {isLoggedIn
-                ? '아직 좋아요한 레시피가 없습니다.'
-                : '로그인하고 좋아하는 레시피를 저장해보세요!'}
-            </p>
-            {!isLoggedIn ? (
-              <Button onClick={requestLogin}>로그인하기</Button>
-            ) : (
+          !isLoggedIn ? (
+            <LoginRequired
+              icon={Heart}
+              message='로그인하고 좋아하는 레시피를 저장해보세요!'
+              onLoginClick={requestLogin}
+            />
+          ) : (
+            <div className='py-12 text-center'>
+              <Heart className='text-muted-foreground mx-auto mb-4 h-16 w-16' />
+              <p className='text-muted-foreground mb-4 text-lg'>
+                아직 좋아요한 레시피가 없습니다.
+              </p>
               <Button onClick={() => router.push('/recipes')}>레시피 찾아보기</Button>
-            )}
-          </div>
+            </div>
+          )
         ) : (
           <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
             {recipes.map((recipe) => (

@@ -62,7 +62,7 @@ export default function LoginDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      {!trigger && !open && (
+      {!trigger && open === undefined && (
         <DialogTrigger asChild>
           <Button variant='outline'>로그인</Button>
         </DialogTrigger>

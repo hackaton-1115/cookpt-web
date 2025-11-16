@@ -3,7 +3,6 @@
 import { ArrowLeft, ChefHat, Clock, Flame, Heart, Loader2, Users } from 'lucide-react';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -105,12 +104,10 @@ export default function RecipeDetailPage() {
   ) : (
     <main className='bg-background min-h-screen'>
       <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8'>
-        <Link href='/recipes'>
-          <Button variant='ghost' className='mb-4 sm:mb-6' size='sm'>
-            <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
-            레시피 목록으로
-          </Button>
-        </Link>
+        <Button variant='ghost' className='mb-4 sm:mb-6' size='sm' onClick={() => router.back()}>
+          <ArrowLeft className='mr-1 h-4 w-4 sm:mr-2' />
+          레시피 목록으로
+        </Button>
 
         <div className='grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-5'>
           <div className='space-y-4 sm:space-y-6 md:col-span-3'>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoginRequired } from '@/components/LoginRequired';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLogin } from '@/hooks/useLogin';
@@ -32,10 +33,9 @@ export default function MyPage() {
       } = await supabase.auth.getUser();
 
       if (!currentUser) {
-        // 로그인하지 않은 경우 로그인 요청
+        // 로그인하지 않은 경우 로그인 필요 상태로 설정
         setNeedsLogin(true);
         setLoading(false);
-        requestLogin();
         return;
       }
 
@@ -87,21 +87,29 @@ export default function MyPage() {
 
   if (needsLogin) {
     return (
-      <div className='bg-background flex min-h-screen items-center justify-center'>
-        <div className='text-center'>
-          <User className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
-          <h2 className='mb-2 text-xl font-semibold'>로그인이 필요합니다</h2>
-          <p className='text-muted-foreground mb-4'>마이페이지를 이용하려면 로그인해주세요</p>
-          <Button onClick={requestLogin}>로그인하기</Button>
+      <main className='bg-background min-h-screen py-8'>
+        <div className='container mx-auto px-4'>
+          <div className='mb-8'>
+            <div className='mb-2 flex items-center gap-2'>
+              <User className='h-8 w-8' />
+              <h1 className='text-foreground text-3xl font-bold'>마이페이지</h1>
+            </div>
+            <p className='text-muted-foreground'>내 정보와 활동을 확인하세요</p>
+          </div>
+          <LoginRequired
+            icon={User}
+            message='마이페이지를 이용하려면 로그인해주세요'
+            onLoginClick={requestLogin}
+          />
         </div>
         <LoginDialogComponent />
-      </div>
+      </main>
     );
   }
 
   return (
     <main className='bg-background min-h-screen py-8'>
-      <div className='container mx-auto max-w-4xl px-4'>
+      <div className='container mx-auto px-4'>
         {/* 페이지 헤더 */}
         <div className='mb-8'>
           <div className='mb-2 flex items-center gap-2'>
