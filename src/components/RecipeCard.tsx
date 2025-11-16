@@ -20,12 +20,20 @@ interface RecipeCardProps {
   initialLiked?: boolean;
 }
 
+const difficultyColor = {
+  easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
+  medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+  hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
+};
+
 export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: RecipeCardProps) {
   const { requestLogin, LoginDialogComponent } = useLogin();
   const [liked, setLiked] = useState<boolean>(initialLiked);
   const [likesCount, setLikesCount] = useState<number>(recipe.likesCount || 0);
   const [isLiking, setIsLiking] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  const router = useRouter();
 
   const totalTime = recipe.prepTime + recipe.cookTime;
 
@@ -78,15 +86,9 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
     }
   };
 
-  const difficultyColor = {
-    easy: 'bg-green-500/10 text-green-700 dark:text-green-400',
-    medium: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-    hard: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  };
-
   return (
     <Link href={`/recipes/${recipe.id}`}>
-      <Card className='group h-full cursor-pointer overflow-hidden transition-shadow hover:shadow-lg'>
+      <Card className='group h-full cursor-pointer gap-y-0 overflow-hidden py-0 transition-shadow hover:shadow-lg'>
         <div className='relative h-40 overflow-hidden sm:h-48'>
           <Image
             src={recipe.image || '/placeholder.svg'}
@@ -109,7 +111,7 @@ export function RecipeCard({ recipe, matchPercentage, initialLiked = false }: Re
           <Button
             variant='ghost'
             size='icon'
-            className='absolute bottom-2 right-2 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white sm:h-9 sm:w-9'
+            className='absolute right-2 bottom-2 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white sm:h-9 sm:w-9'
             onClick={handleLikeClick}
             disabled={isLiking}
           >
