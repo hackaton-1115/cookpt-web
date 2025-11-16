@@ -141,28 +141,28 @@ export default function RecipeDetailPage() {
             </div>
 
             <div className='grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4'>
-              <Card>
+              <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Clock className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{totalTime}</div>
                   <div className='text-muted-foreground text-xs'>minutes</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Users className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{recipe.servings}</div>
                   <div className='text-muted-foreground text-xs'>servings</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <ChefHat className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
-                  <div className='truncate text-xs font-bold sm:text-sm'>{recipe.category}</div>
+                  <div className='text-lg font-bold sm:text-xl'>{recipe.category}</div>
                   <div className='text-muted-foreground text-xs'>category</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className='py-0'>
                 <CardContent className='p-3 text-center sm:p-4'>
                   <Flame className='text-primary mx-auto mb-1 h-5 w-5 sm:mb-2 sm:h-6 sm:w-6' />
                   <div className='text-xl font-bold sm:text-2xl'>{recipe.nutrition.calories}</div>

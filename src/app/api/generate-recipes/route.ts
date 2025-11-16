@@ -121,19 +121,33 @@ const buildRecipePrompt = (params: {
   prompt += '    "title": "김치볶음밥",\n';
   prompt += '    "description": "남은 밥과 김치로 5분 만에 만드는 간단한 한 끼",\n';
   prompt += '    "ingredients": [\n';
-  prompt += '      {"name": "밥", "amount": "1", "unit": "공기"},\n';
-  prompt += '      {"name": "김치", "amount": "100", "unit": "g"}\n';
+  prompt += '      {"name": "밥", "amount": "2", "unit": "공기"},\n';
+  prompt += '      {"name": "배추김치", "amount": "150", "unit": "g"},\n';
+  prompt += '      {"name": "대파", "amount": "1/2", "unit": "대"},\n';
+  prompt += '      {"name": "양파", "amount": "1/4", "unit": "개"},\n';
+  prompt += '      {"name": "식용유", "amount": "2", "unit": "큰술"},\n';
+  prompt += '      {"name": "참기름", "amount": "1", "unit": "작은술"},\n';
+  prompt += '      {"name": "김치국물", "amount": "2", "unit": "큰술"},\n';
+  prompt += '      {"name": "간장", "amount": "1/2", "unit": "큰술"},\n';
+  prompt += '      {"name": "참깨", "amount": "약간", "unit": ""},\n';
+  prompt += '      {"name": "김가루", "amount": "약간", "unit": ""}\n';
   prompt += '    ],\n';
   prompt += '    "instructions": [\n';
-  prompt += '      "김치를 잘게 썰어주세요.",\n';
-  prompt += '      "프라이팬에 김치를 볶다가 밥을 넣고 함께 볶아주세요."\n';
+  prompt +=
+    '      "1. 준비: 김치는 송송 잘게 썰어주세요. 김치의 물기는 가볍게 짜서 제거해주세요.",\n';
+  prompt +=
+    '      "2. 볶기: 프라이팬에 식용유를 두르고 중불로 예열한 후, 김치를 먼저 넣고 2-3분간 볶아 김치의 신맛을 날려주세요.",\n';
+  prompt +=
+    '      "3. 밥 넣기: 볶은 김치 위에 밥을 넣고 주걱으로 밥알이 으깨지지 않도록 부드럽게 섞으며 3-4분간 볶아주세요.",\n';
+  prompt +=
+    '      "4. 마무리: 불을 끄고 참기름을 둘러 한 번 더 섞어주세요. 기호에 따라 김가루나 참깨를 뿌려 완성합니다."\n';
   prompt += '    ],\n';
   prompt += '    "cookingTime": 5,\n';
   prompt += '    "prepTime": 3,\n';
   prompt += '    "servings": 1,\n';
   prompt += '    "difficulty": "easy",\n';
   prompt += '    "category": "Main Course",\n';
-  prompt += '    "cookingTools": ["프라이팬"],\n';
+  prompt += '    "cookingTools": ["프라이팬", "주걱"],\n';
   prompt += '    "tags": ["빠른요리", "한식", "볶음밥"],\n';
   prompt +=
     '    "nutrition": {"calories": 350, "protein": 8, "carbs": 55, "fat": 10, "fiber": 3}\n';
@@ -143,7 +157,7 @@ const buildRecipePrompt = (params: {
   // 제약사항
   prompt += '### 주의사항\n';
   prompt +=
-    '1. 반드시 위에 제시된 재료만 사용하세요. 추가 재료는 기본 조미료(소금, 후추, 식용유)만 허용됩니다.\n';
+    '1. 반드시 위에 제시된 재료만 사용하세요. 추가 재료는 기본 조미료(소금, 후추, 식용유, 간장, 참기름 등)만 허용됩니다.\n';
   prompt += '2. cookingTime, prepTime은 분 단위 숫자로 작성하세요.\n';
   prompt += '3. difficulty는 "easy", "medium", "hard" 중 하나만 사용하세요.\n';
   prompt += '4. cookingTools는 실제로 사용하는 도구만 정확히 나열하세요.\n';
@@ -154,6 +168,46 @@ const buildRecipePrompt = (params: {
   prompt += '8. 각 레시피는 서로 다른 요리여야 합니다. 비슷한 레시피를 반복하지 마세요.\n';
   prompt +=
     '9. 모든 필드(title, description, instructions 등)는 반드시 한국어로 작성해야 합니다.\n';
+  prompt += '\n';
+  prompt += '### 재료(ingredients) 작성 가이드\n';
+  prompt +=
+    '⚠️ 매우 중요: 재료는 초보자도 정확히 계량할 수 있도록 매우 구체적이고 상세하게 작성해야 합니다.\n';
+  prompt += '각 재료는 다음 원칙을 따라주세요:\n';
+  prompt +=
+    '- 재료명은 구체적으로 작성하세요 (예: "김치" 대신 "배추김치", "고추" 대신 "청양고추").\n';
+  prompt +=
+    '- 계량 단위를 정확히 명시하세요 (예: "큰술", "작은술", "g", "ml", "개", "대", "컵", "공기").\n';
+  prompt += '- 분수 표현을 사용하세요 (예: "1/2", "1/3", "1/4").\n';
+  prompt +=
+    '- 소량의 재료는 "약간"으로 표시하되, 가능하면 구체적인 양을 제시하세요 (예: "참깨 약간" 또는 "참깨 1작은술").\n';
+  prompt +=
+    '- 필수 재료와 선택 재료를 모두 포함하세요 (예: 토핑, 가니쉬도 재료 목록에 포함).\n';
+  prompt +=
+    '- 조미료와 양념은 빠짐없이 나열하세요 (예: 소금, 설탕, 간장, 고추장, 참기름, 식용유 등).\n';
+  prompt +=
+    '- 부재료도 상세히 작성하세요 (예: "물 600ml", "육수 2컵", "다진 마늘 1/2큰술").\n';
+  prompt +=
+    '- 재료는 조리 순서대로 배열하되, 주재료 → 부재료 → 양념 순으로 정리하세요.\n';
+  prompt +=
+    '- 최소 8-12개 이상의 재료로 구성하여 완성도 있는 레시피를 작성하세요.\n';
+  prompt += '\n';
+  prompt += '### 조리법(instructions) 작성 가이드\n';
+  prompt +=
+    '⚠️ 매우 중요: 조리법은 초보자도 따라할 수 있도록 매우 상세하고 구체적으로 작성해야 합니다.\n';
+  prompt += '각 단계는 다음 형식을 따라주세요:\n';
+  prompt += '- 각 단계 앞에 "1. 준비:", "2. 볶기:", "3. 조리:" 등의 번호와 단계명을 붙여주세요.\n';
+  prompt +=
+    '- 재료의 구체적인 손질 방법을 명시하세요 (예: "잘게 썰기", "송송 썰기", "한입 크기로 자르기").\n';
+  prompt +=
+    '- 조리 도구와 불 세기를 명확히 표시하세요 (예: "중불로 예열", "약불에서 5분간 끓이기").\n';
+  prompt +=
+    '- 시간과 상태를 구체적으로 설명하세요 (예: "2-3분간 볶아 김치의 신맛을 날려주세요", "노릇해질 때까지 굽기").\n';
+  prompt +=
+    '- 조리 중 주의사항이나 팁을 포함하세요 (예: "밥알이 으깨지지 않도록 부드럽게 섞기", "물이 끓어넘치지 않도록 주의").\n';
+  prompt +=
+    '- 최소 4-6단계 이상으로 작성하여 초보자도 쉽게 따라할 수 있도록 하세요.\n';
+  prompt +=
+    '- 마무리 단계에서는 완성 기준과 선택적 토핑/가니쉬를 안내하세요 (예: "김가루나 참깨를 뿌려 완성").\n';
 
   return prompt;
 };
