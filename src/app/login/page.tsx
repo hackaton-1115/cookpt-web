@@ -2,12 +2,12 @@
 
 import { Sparkles } from 'lucide-react';
 
-import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { Spinner } from '@/components/ui/spinner';
 import { createClient } from '@/lib/supabase/client';
+import { isNativeApp } from '@/lib/supabase/native-auth';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<{ google: boolean; kakao: boolean }>({
@@ -15,6 +15,7 @@ export default function LoginPage() {
     kakao: false,
   });
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
+  const [isNative, setIsNative] = useState<boolean>(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,6 +24,9 @@ export default function LoginPage() {
   // 이미 로그인된 경우 리다이렉트
   useEffect(() => {
     const checkAuth = async () => {
+      // 네이티브 앱 여부 체크
+      setIsNative(isNativeApp());
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -96,6 +100,15 @@ export default function LoginPage() {
           <p className='text-muted-foreground mb-6 text-center text-sm'>
             소셜 계정으로 간편하게 로그인하세요
           </p>
+
+          {/* 네이티브 앱 감지 표시 (테스트용) */}
+          <div
+            className={`mb-4 rounded-lg p-3 text-center text-sm ${
+              isNative ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            {isNative ? '✅ 네이티브 앱으로 인식됨 (CookptApp)' : '🌐 웹 브라우저로 인식됨'}
+          </div>
 
           <div className='flex flex-col items-center gap-4'>
             {/* Google Sign In Button */}

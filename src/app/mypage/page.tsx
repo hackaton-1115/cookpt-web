@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getLikedRecipeIds } from '@/lib/recipe-likes';
 import { createClient } from '@/lib/supabase/client';
+import { isNativeApp, sendLogoutToNative } from '@/lib/supabase/native-auth';
 
 export default function MyPage() {
   const [likedCount, setLikedCount] = useState<number>(0);
@@ -59,6 +60,12 @@ export default function MyPage() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+
+    // 네이티브 앱이면 저장된 토큰도 삭제하도록 알림
+    if (isNativeApp()) {
+      sendLogoutToNative();
+    }
+
     router.push('/');
   };
 
