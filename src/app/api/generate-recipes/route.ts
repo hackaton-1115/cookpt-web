@@ -253,7 +253,6 @@ export const POST = async (req: NextRequest) => {
 
     // 1. 동적 프롬프트 생성
     const recipePrompt = buildRecipePrompt({ ingredients, theme, cuisine, tools });
-    console.log('Generated prompt:', recipePrompt);
 
     // 2. Gemini로 레시피 생성
     const recipeResult = await textModel.generateContent(recipePrompt);
@@ -265,7 +264,6 @@ export const POST = async (req: NextRequest) => {
       const jsonText = recipeText.replace(/```json\n?|```/g, '').trim();
       recipes = JSON.parse(jsonText) as AIGeneratedRecipe[];
     } catch {
-      console.error('Failed to parse recipe JSON:', recipeText);
       return NextResponse.json(
         {
           success: false,
@@ -293,7 +291,6 @@ export const POST = async (req: NextRequest) => {
 
     // 최대 9개로 제한
     const limitedRecipes = recipes.slice(0, 9);
-    console.log(`Generated ${limitedRecipes.length} recipes`);
 
     // Supabase 클라이언트 생성
     const supabase = await createClient();
@@ -318,8 +315,6 @@ export const POST = async (req: NextRequest) => {
 
       // 이미지 생성 시도
       try {
-        console.log(`Generating image for: ${recipe.title}`);
-
         const cuisineNames: Record<string, string> = {
           korean: 'Korean',
           japanese: 'Japanese',
@@ -338,8 +333,6 @@ export const POST = async (req: NextRequest) => {
             numberOfImages: 1,
           },
         });
-
-        console.log('Image generated successfully');
 
         if (imageResponse.generatedImages && imageResponse.generatedImages.length > 0) {
           const firstImage = imageResponse.generatedImages[0];
@@ -364,26 +357,19 @@ export const POST = async (req: NextRequest) => {
                 data: { publicUrl },
               } = supabase.storage.from('recipe-images').getPublicUrl(storageFileName);
               imageUrl = publicUrl;
-              console.log('Image uploaded successfully:', imageUrl);
             } else {
-              console.error('Image upload error:', uploadError);
-              console.log(`Using placeholder for ${recipe.title} due to upload error`);
               imageErrors.push({
                 recipe: recipe.title,
                 error: 'Upload failed: ' + uploadError.message,
               });
             }
           } else {
-            console.log(`Using placeholder for ${recipe.title} - No image bytes`);
             imageErrors.push({ recipe: recipe.title, error: 'No image bytes' });
           }
         } else {
-          console.log(`Using placeholder for ${recipe.title} - No generated images`);
           imageErrors.push({ recipe: recipe.title, error: 'No generated images' });
         }
       } catch (imageError) {
-        console.error('Image generation error for', recipe.title, ':', imageError);
-        console.log(`Using placeholder for ${recipe.title} due to generation error`);
         imageErrors.push({
           recipe: recipe.title,
           error: imageError instanceof Error ? imageError.message : 'Unknown error',
@@ -423,9 +409,7 @@ export const POST = async (req: NextRequest) => {
 
         const { error } = await supabase.from('recipes').insert(recipeData);
 
-        if (error) {
-          console.error('Failed to save recipe:', error);
-        } else {
+        if (!error) {
           savedRecipes.push({
             id: recipeId,
             title: recipe.title,
@@ -444,8 +428,8 @@ export const POST = async (req: NextRequest) => {
             likesCount: 0,
           });
         }
-      } catch (error) {
-        console.error('Error saving recipe:', error);
+      } catch {
+        // Error saving recipe
       }
     }
 
@@ -455,8 +439,6 @@ export const POST = async (req: NextRequest) => {
       imageErrors: imageErrors.length > 0 ? imageErrors : undefined,
     });
   } catch (error) {
-    console.error('Error:', error);
-
     let errorMessage = '레시피 생성 중 오류가 발생했습니다.';
     if (error instanceof Error) {
       if (error.message?.includes('timeout') || error.message?.includes('시간 초과')) {
