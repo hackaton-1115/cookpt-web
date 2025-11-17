@@ -1,0 +1,377 @@
+{
+  "projectInfo": {
+    "name": "픽셀 레시피 (Pixel Recipe)",
+    "description": "16비트 레트로 픽셀 아트 스타일의 AI 기반 레시피 생성 서비스",
+    "designStyle": "16-bit Retro Pixel Art",
+    "version": "1.0.0"
+  },
+  
+  "colorPalette": {
+    "primary": {
+      "main": "#ff5252",
+      "description": "브라이트 코랄 레드 - 버튼, 아이콘, 액센트에 사용",
+      "hover": "#e63946",
+      "usage": [
+        "Primary 버튼 배경",
+        "아이콘 포인트 컬러",
+        "중요 텍스트 강조",
+        "배지 및 태그",
+        "숫자 카운터",
+        "로딩 스피너"
+      ]
+    },
+    
+    "backgrounds": {
+      "main": "#fafafa",
+      "description": "라이트 그레이 - 메인 배경색 (중립적이고 깔끔)",
+      "secondary": "#ffe0e0",
+      "secondaryDescription": "코랄 핑크 - 헤더, 푸터, 섹션 배경",
+      "card": "#ffffff",
+      "cardDescription": "화이트 - 카드 및 컴포넌트 배경",
+      "empty": "#ffe0e0",
+      "emptyDescription": "핑크 톤 - 빈 상태 아이콘 배경",
+      "usage": {
+        "main": "전체 페이지 기본 배경",
+        "secondary": "헤더, 푸터, Features 섹션, Benefits 섹션",
+        "card": "카드, 입력 폼, 모달, 컨테이너"
+      }
+    },
+    
+    "text": {
+      "primary": "#5d4037",
+      "primaryDescription": "다크 브라운 - 메인 텍스트",
+      "secondary": "rgba(93, 64, 55, 0.7)",
+      "secondaryDescription": "70% 투명도 - 서브 텍스트",
+      "tertiary": "rgba(93, 64, 55, 0.6)",
+      "tertiaryDescription": "60% 투명도 - 설명 텍스트",
+      "light": "rgba(93, 64, 55, 0.3)",
+      "lightDescription": "30% 투명도 - 비활성 요소",
+      "onPrimary": "#ffffff",
+      "onPrimaryDescription": "화이트 - Primary 버튼 위의 텍스트"
+    },
+    
+    "borders": {
+      "main": "#5d4037",
+      "mainDescription": "다크 브라운 - 모든 테두리",
+      "thickness": {
+        "thin": "2px",
+        "regular": "4px",
+        "description": "픽셀 아트 스타일을 위한 두꺼운 테두리"
+      },
+      "style": "solid",
+      "usage": "모든 카드, 버튼, 입력 요소, 이미지에 적용"
+    },
+    
+    "decorative": {
+      "pixel": "rgba(93, 64, 55, 0.2)",
+      "pixelDescription": "20% 투명도 - 픽셀 데코레이션"
+    }
+  },
+  
+  "typography": {
+    "fontFamily": {
+      "pixel": "Press Start 2P, system-ui, sans-serif",
+      "description": "픽셀 폰트 - 제목, 버튼, 중요 텍스트",
+      "className": "pixel-text"
+    },
+    "fontSizes": {
+      "note": "폰트 사이즈와 굵기는 /styles/globals.css에 정의된 기본값 사용",
+      "customSizes": {
+        "pixelSmall": "text-xs (0.75rem)",
+        "pixelMedium": "text-sm (0.875rem)",
+        "pixelLarge": "text-xl (1.25rem)",
+        "pixelXLarge": "text-2xl (1.5rem)",
+        "pixelXXLarge": "text-3xl (1.875rem)"
+      }
+    },
+    "usage": {
+      "headings": "pixel-text 클래스 사용",
+      "body": "기본 폰트 (globals.css 정의)",
+      "buttons": "pixel-text 클래스 사용",
+      "labels": "일반 텍스트"
+    }
+  },
+  
+  "spacing": {
+    "unit": "0.25rem (4px)",
+    "scale": {
+      "xs": "0.5rem (8px)",
+      "sm": "0.75rem (12px)",
+      "md": "1rem (16px)",
+      "lg": "1.5rem (24px)",
+      "xl": "2rem (32px)",
+      "2xl": "3rem (48px)",
+      "3xl": "4rem (64px)"
+    },
+    "padding": {
+      "button": "1rem 1.5rem (py-4 px-6)",
+      "card": "1.5rem (p-6)",
+      "cardSmall": "1rem (p-4)",
+      "input": "0.75rem (p-3)"
+    },
+    "gap": {
+      "tight": "0.5rem (gap-2)",
+      "normal": "0.75rem (gap-3)",
+      "relaxed": "1rem (gap-4)",
+      "loose": "1.5rem (gap-6)"
+    }
+  },
+  
+  "shadows": {
+    "pixelShadow": {
+      "regular": "shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]",
+      "small": "shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]",
+      "description": "픽셀 아트 스타일의 하드 쉐도우 (no blur)",
+      "offset": {
+        "regular": "8px x, 8px y",
+        "small": "4px x, 4px y"
+      },
+      "color": "rgba(93, 64, 55, 1)"
+    },
+    "hoverEffect": {
+      "translate": "translate-x-2 translate-y-2",
+      "shadow": "shadow-none",
+      "description": "호버 시 요소가 움직이며 그림자 제거"
+    }
+  },
+  
+  "effects": {
+    "imageRendering": {
+      "value": "pixelated",
+      "usage": "모든 이미지와 아이콘에 적용하여 픽셀 아트 느낌 유지",
+      "css": "style={{ imageRendering: 'pixelated' }}"
+    },
+    "transitions": {
+      "default": "transition-all",
+      "colors": "transition-colors",
+      "description": "부드러운 상태 변화"
+    }
+  },
+  
+  "components": {
+    "button": {
+      "primary": {
+        "background": "#ff5252",
+        "text": "#ffffff",
+        "border": "4px solid #5d4037",
+        "shadow": "shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]",
+        "hover": "translate-x-2 translate-y-2 + shadow-none",
+        "className": "bg-[#ff5252] text-white border-4 border-[#5d4037] pixel-button shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all"
+      },
+      "secondary": {
+        "background": "#ffffff",
+        "text": "#5d4037",
+        "border": "2px solid #5d4037",
+        "shadow": "shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]",
+        "hover": "translate-x-1 translate-y-1 + shadow-none"
+      },
+      "disabled": {
+        "background": "rgba(93, 64, 55, 0.2)",
+        "text": "rgba(93, 64, 55, 0.4)",
+        "cursor": "not-allowed"
+      }
+    },
+    
+    "card": {
+      "default": {
+        "background": "#ffffff",
+        "border": "4px solid #5d4037",
+        "shadow": "shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]",
+        "hover": "translate-x-2 translate-y-2 + shadow-none (interactive cards only)",
+        "className": "bg-white border-4 border-[#5d4037] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]"
+      },
+      "padding": "p-6 (1.5rem)",
+      "gap": "gap-4 or gap-6"
+    },
+    
+    "input": {
+      "default": {
+        "background": "#ffffff",
+        "border": "2px solid #5d4037",
+        "text": "#5d4037",
+        "padding": "p-3 (0.75rem)",
+        "focus": "border-[#ff5252]",
+        "className": "bg-white border-2 border-[#5d4037] text-[#5d4037] focus:outline-none focus:border-[#ff5252] transition-colors"
+      }
+    },
+    
+    "badge": {
+      "primary": {
+        "background": "#ff5252",
+        "text": "#ffffff",
+        "border": "2px solid #5d4037",
+        "className": "bg-[#ff5252] text-white border-2 border-[#5d4037] pixel-text text-xs px-3 py-1"
+      },
+      "secondary": {
+        "background": "#ffe0e0",
+        "text": "#5d4037",
+        "border": "2px solid #5d4037",
+        "className": "bg-[#ffe0e0] text-[#5d4037] border-2 border-[#5d4037] text-xs px-2 py-1"
+      },
+      "light": {
+        "background": "#ffffff",
+        "text": "#5d4037",
+        "border": "2px solid #5d4037",
+        "className": "bg-white text-[#5d4037] border-2 border-[#5d4037] text-sm px-3 py-1"
+      }
+    },
+    
+    "tag": {
+      "default": {
+        "background": "#ffffff",
+        "text": "#5d4037",
+        "border": "2px solid #5d4037",
+        "className": "bg-white text-[#5d4037] border-2 border-[#5d4037] pixel-button text-sm px-3 py-1"
+      },
+      "removable": {
+        "hoverIcon": "text-[#ff5252]"
+      }
+    },
+    
+    "iconBox": {
+      "primary": {
+        "background": "#ff5252",
+        "border": "4px solid #5d4037",
+        "icon": "#ffffff",
+        "shadow": "shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]",
+        "className": "bg-[#ff5252] border-4 border-[#5d4037] shadow-[4px_4px_0px_0px_rgba(93,64,55,1)]"
+      },
+      "secondary": {
+        "background": "#ffffff",
+        "border": "2px solid #5d4037",
+        "icon": "#5d4037"
+      }
+    },
+    
+    "header": {
+      "background": "#ffe0e0",
+      "border": "border-b-4 border-[#5d4037]",
+      "position": "sticky top-0 z-50",
+      "padding": "p-6"
+    },
+    
+    "footer": {
+      "background": "#ffe0e0",
+      "border": "border-t-4 border-[#5d4037]",
+      "padding": "py-6 or py-8"
+    },
+    
+    "section": {
+      "alternating": {
+        "default": "bg-[#fafafa]",
+        "accent": "bg-[#ffe0e0]"
+      },
+      "padding": "py-16 px-6"
+    }
+  },
+  
+  "layout": {
+    "maxWidth": {
+      "content": "max-w-7xl",
+      "article": "max-w-4xl",
+      "text": "max-w-6xl",
+      "narrow": "max-w-3xl or max-w-2xl"
+    },
+    "container": {
+      "center": "mx-auto",
+      "padding": "p-6 or px-6"
+    },
+    "grid": {
+      "cards": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+      "features": "grid grid-cols-1 md:grid-cols-3 gap-6",
+      "benefits": "grid grid-cols-1 md:grid-cols-2 gap-4",
+      "stats": "grid grid-cols-2 md:grid-cols-4 gap-4"
+    }
+  },
+  
+  "decorations": {
+    "pixelShapes": {
+      "sizes": ["w-4 h-4", "w-5 h-5", "w-6 h-6", "w-8 h-8"],
+      "color": "#5d4037",
+      "opacity": "opacity-20",
+      "animation": "pixel-rotate",
+      "positioning": "fixed + top/left/right/bottom values",
+      "usage": "배경 장식용 픽셀 사각형"
+    }
+  },
+  
+  "animations": {
+    "pixelRotate": {
+      "name": "pixel-rotate",
+      "description": "픽셀 데코레이션 회전 애니메이션",
+      "defined": "globals.css"
+    },
+    "hover": {
+      "cards": "translate-x-2 translate-y-2 + shadow removal",
+      "buttons": "translate-x-2 translate-y-2 + shadow removal",
+      "smallButtons": "translate-x-1 translate-y-1 + shadow removal"
+    }
+  },
+  
+  "designPrinciples": {
+    "pixelArt": {
+      "hardEdges": "모든 요소는 각진 테두리 사용 (no border-radius)",
+      "hardShadows": "블러 없는 하드 쉐도우만 사용",
+      "chunkyBorders": "두꺼운 테두리 (2px, 4px) 사용",
+      "pixelatedImages": "모든 이미지에 imageRendering: 'pixelated' 적용"
+    },
+    "colorUsage": {
+      "primary": "액션 요소(버튼, 링크, 중요 정보)에만 사용",
+      "background": "메인은 중립색, 섹션별로 핑크 톤 교차 사용",
+      "text": "단일 다크 브라운 컬러로 통일, 투명도로 위계 구분"
+    },
+    "spacing": {
+      "generous": "충분한 여백으로 읽기 편한 레이아웃",
+      "consistent": "일관된 간격 사용 (4px 단위)"
+    },
+    "interactive": {
+      "feedback": "모든 인터랙티브 요소에 호버 효과 필수",
+      "movement": "픽셀 아트 스타일의 움직임 (translate + shadow change)"
+    }
+  },
+  
+  "usageExamples": {
+    "primaryButton": {
+      "code": "<button className=\"px-8 py-4 bg-[#ff5252] text-white border-4 border-[#5d4037] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all pixel-button shadow-[8px_8px_0px_0px_rgba(93,64,55,1)]\">",
+      "description": "메인 CTA 버튼"
+    },
+    "card": {
+      "code": "<div className=\"bg-white border-4 border-[#5d4037] shadow-[8px_8px_0px_0px_rgba(93,64,55,1)] p-6\">",
+      "description": "기본 카드 컨테이너"
+    },
+    "heading": {
+      "code": "<h2 className=\"text-[#5d4037] pixel-text text-xl\">",
+      "description": "픽셀 폰트 제목"
+    },
+    "input": {
+      "code": "<input className=\"w-full p-3 bg-white border-2 border-[#5d4037] text-[#5d4037] focus:outline-none focus:border-[#ff5252] transition-colors\" />",
+      "description": "입력 필드"
+    },
+    "badge": {
+      "code": "<div className=\"px-3 py-1 bg-[#ff5252] text-white border-2 border-[#5d4037] pixel-text text-xs\">",
+      "description": "Primary 배지"
+    }
+  },
+  
+  "fileReferences": {
+    "globals": "/styles/globals.css - 타이포그래피, 애니메이션 정의",
+    "components": {
+      "App": "/App.tsx - 메인 앱 페이지",
+      "LandingPage": "/components/LandingPage.tsx - 랜딩 페이지",
+      "RecipeHeader": "/components/RecipeHeader.tsx - 헤더",
+      "ImageUpload": "/components/ImageUpload.tsx - 이미지 업로드",
+      "IngredientTags": "/components/IngredientTags.tsx - 재료 태그",
+      "RecipeOptions": "/components/RecipeOptions.tsx - 옵션 선택",
+      "RecipeCard": "/components/RecipeCard.tsx - 레시피 카드",
+      "RecipeDetail": "/components/RecipeDetail.tsx - 레시피 상세"
+    }
+  },
+  
+  "notes": {
+    "tailwind": "Tailwind v4.0 사용",
+    "noRounding": "border-radius를 절대 사용하지 않음 (픽셀 아트 스타일 유지)",
+    "noBlur": "blur 효과를 사용하지 않음 (하드 쉐도우만)",
+    "fontSizeOverride": "globals.css의 기본 타이포그래피를 우선 사용, 커스텀 필요 시에만 명시",
+    "consistency": "모든 컴포넌트가 동일한 디자인 언어 사용"
+  }
+}
